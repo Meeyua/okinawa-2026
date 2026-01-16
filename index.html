@@ -1,68 +1,169 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>2026 沖繩六天五夜自由行儀表板</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="main.js"></script>
-    <link rel="main.css">
-</head>
+    <style>
+        /* Chart Container Strict Styling */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
 
+        /* Custom Scrollbar for aesthetic */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Transition utilities */
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .active-tab {
+            border-bottom: 3px solid #0ea5e9;
+            color: #0ea5e9;
+            font-weight: 600;
+        }
+        .inactive-tab {
+            border-bottom: 3px solid transparent;
+            color: #64748b;
+        }
+        .inactive-tab:hover {
+            color: #334155;
+        }
+        
+        /* Mobile Menu Transitions */
+        #mobile-menu {
+            transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out, visibility 0.3s;
+            max-height: 0;
+            opacity: 0;
+            visibility: hidden;
+            overflow: hidden;
+            /* Remove border-t here to prevent line when closed, added via class toggle or logic */
+        }
+        #mobile-menu.open {
+            max-height: 500px; /* Increased max height for new item */
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Map Container */
+        .map-wrapper {
+            position: relative;
+            padding-bottom: 75%; /* 4:3 Aspect Ratio for mobile */
+            height: 0;
+            overflow: hidden;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        @media (min-width: 768px) {
+            .map-wrapper {
+                padding-bottom: 56.25%; /* 16:9 for tablet/desktop */
+                height: 600px; /* Fixed height for large screens */
+                padding-bottom: 0; 
+            }
+        }
+        .map-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        /* Route Steps Styling */
+        .route-step {
+            position: relative;
+            padding-left: 2rem;
+            padding-bottom: 1.5rem;
+            border-left: 2px solid #e2e8f0;
+        }
+        .route-step:last-child {
+            border-left: 2px solid transparent;
+        }
+        .route-step::before {
+            content: '';
+            position: absolute;
+            left: -0.4rem;
+            top: 0.25rem;
+            width: 0.8rem;
+            height: 0.8rem;
+            border-radius: 50%;
+            background-color: #0ea5e9;
+            border: 2px solid white;
+            box-shadow: 0 0 0 1px #0ea5e9;
+        }
+    </style>
+    <!-- Chosen Palette: Warm Sand & Ocean Breeze (Slate-50 background, Sky-500 accents, Slate-800 text) -->
+</head>
 <body class="bg-slate-50 text-slate-800 font-sans leading-relaxed selection:bg-sky-100 selection:text-sky-700">
 
     <!-- Navigation Bar -->
     <nav class="sticky top-0 z-50 bg-white/95 backdrop-blur-md shadow-sm border-b border-slate-200">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
-
+                
                 <!-- Left: Brand & Title -->
-                <div class="flex-shrink-0 flex items-center gap-2 cursor-pointer select-none"
-                    onclick="switchTab('overview')">
+                <div class="flex-shrink-0 flex items-center gap-2 cursor-pointer select-none" onclick="switchTab('overview')">
                     <span class="text-2xl">🌺</span>
-                    <span class="font-bold text-lg sm:text-xl tracking-tight text-slate-700" id="nav-title">沖繩
-                        2026</span>
+                    <span class="font-bold text-lg sm:text-xl tracking-tight text-slate-700" id="nav-title">沖繩 2026</span>
                 </div>
-
+                
                 <!-- Center: Desktop Tabs (Hidden on Mobile) -->
                 <div class="hidden md:flex flex-1 justify-center mx-2">
-                    <div class="flex space-x-6">
-                        <button onclick="switchTab('overview')" id="tab-btn-overview"
-                            class="active-tab px-3 py-4 text-sm font-medium transition-colors whitespace-nowrap"
-                            data-key="tab_overview">總覽</button>
-                        <button onclick="switchTab('itinerary')" id="tab-btn-itinerary"
-                            class="inactive-tab px-3 py-4 text-sm font-medium transition-colors whitespace-nowrap"
-                            data-key="tab_itinerary">每日行程</button>
-                        <button onclick="switchTab('map')" id="tab-btn-map"
-                            class="inactive-tab px-3 py-4 text-sm font-medium transition-colors whitespace-nowrap"
-                            data-key="tab_map">地圖</button>
-                        <button onclick="switchTab('budget')" id="tab-btn-budget"
-                            class="inactive-tab px-3 py-4 text-sm font-medium transition-colors whitespace-nowrap"
-                            data-key="tab_budget">預算</button>
-                        <button onclick="switchTab('prep')" id="tab-btn-prep"
-                            class="inactive-tab px-3 py-4 text-sm font-medium transition-colors whitespace-nowrap"
-                            data-key="tab_prep">準備</button>
+                    <div class="flex space-x-2 lg:space-x-6">
+                        <button onclick="switchTab('overview')" id="tab-btn-overview" class="active-tab px-2 lg:px-3 py-4 text-sm font-medium transition-colors whitespace-nowrap" data-key="tab_overview">總覽</button>
+                        <button onclick="switchTab('itinerary')" id="tab-btn-itinerary" class="inactive-tab px-2 lg:px-3 py-4 text-sm font-medium transition-colors whitespace-nowrap" data-key="tab_itinerary">每日行程</button>
+                        <button onclick="switchTab('map')" id="tab-btn-map" class="inactive-tab px-2 lg:px-3 py-4 text-sm font-medium transition-colors whitespace-nowrap" data-key="tab_map">地圖</button>
+                        <button onclick="switchTab('routes')" id="tab-btn-routes" class="inactive-tab px-2 lg:px-3 py-4 text-sm font-medium transition-colors whitespace-nowrap" data-key="tab_routes">路線攻略</button>
+                        <button onclick="switchTab('budget')" id="tab-btn-budget" class="inactive-tab px-2 lg:px-3 py-4 text-sm font-medium transition-colors whitespace-nowrap" data-key="tab_budget">預算</button>
+                        <button onclick="switchTab('souvenirs')" id="tab-btn-souvenirs" class="inactive-tab px-2 lg:px-3 py-4 text-sm font-medium transition-colors whitespace-nowrap" data-key="tab_souvenirs">伴手禮</button>
+                        <button onclick="switchTab('prep')" id="tab-btn-prep" class="inactive-tab px-2 lg:px-3 py-4 text-sm font-medium transition-colors whitespace-nowrap" data-key="tab_prep">準備</button>
                     </div>
                 </div>
 
                 <!-- Right: Language & Hamburger -->
                 <div class="flex items-center gap-3">
                     <!-- Language Switcher -->
-                    <button onclick="toggleLanguage()"
-                        class="flex items-center gap-1 bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1.5 rounded-full text-xs font-bold transition-colors border border-slate-200 select-none">
+                    <button onclick="toggleLanguage()" class="flex items-center gap-1 bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1.5 rounded-full text-xs font-bold transition-colors border border-slate-200 select-none">
                         <span class="text-base">🌐</span>
                         <span id="lang-label">ZH</span>
                     </button>
 
                     <!-- Mobile Menu Button (Visible on Mobile Only) -->
-                    <button id="mobile-menu-btn" onclick="toggleMobileMenu()"
-                        class="md:hidden p-2 rounded-md text-slate-500 hover:text-slate-700 hover:bg-slate-100 focus:outline-none transition-colors">
+                    <button id="mobile-menu-btn" onclick="toggleMobileMenu()" class="md:hidden p-2 rounded-md text-slate-500 hover:text-slate-700 hover:bg-slate-100 focus:outline-none transition-colors">
                         <!-- Hamburger Icon -->
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 6h16M4 12h16M4 18h16" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
                     </button>
                 </div>
@@ -70,24 +171,15 @@
         </div>
 
         <!-- Mobile Menu Dropdown -->
-        <!-- Added 'border-t' in JS toggle to fix collapse border issue -->
-        <div id="mobile-menu" class="md:hidden bg-white border-slate-100">
+        <div id="mobile-menu" class="md:hidden bg-white border-t border-slate-100">
             <div class="px-2 pt-2 pb-3 space-y-1 shadow-lg">
-                <button onclick="switchTab('overview')" id="mobile-tab-btn-overview"
-                    class="block w-full text-left px-3 py-3 rounded-md text-base font-medium text-sky-600 bg-sky-50"
-                    data-key="tab_overview">總覽</button>
-                <button onclick="switchTab('itinerary')" id="mobile-tab-btn-itinerary"
-                    class="block w-full text-left px-3 py-3 rounded-md text-base font-medium text-slate-600 hover:text-slate-800 hover:bg-slate-50"
-                    data-key="tab_itinerary">每日行程</button>
-                <button onclick="switchTab('map')" id="mobile-tab-btn-map"
-                    class="block w-full text-left px-3 py-3 rounded-md text-base font-medium text-slate-600 hover:text-slate-800 hover:bg-slate-50"
-                    data-key="tab_map">地圖</button>
-                <button onclick="switchTab('budget')" id="mobile-tab-btn-budget"
-                    class="block w-full text-left px-3 py-3 rounded-md text-base font-medium text-slate-600 hover:text-slate-800 hover:bg-slate-50"
-                    data-key="tab_budget">預算</button>
-                <button onclick="switchTab('prep')" id="mobile-tab-btn-prep"
-                    class="block w-full text-left px-3 py-3 rounded-md text-base font-medium text-slate-600 hover:text-slate-800 hover:bg-slate-50"
-                    data-key="tab_prep">準備</button>
+                <button onclick="switchTab('overview')" id="mobile-tab-btn-overview" class="block w-full text-left px-3 py-3 rounded-md text-base font-medium text-sky-600 bg-sky-50" data-key="tab_overview">總覽</button>
+                <button onclick="switchTab('itinerary')" id="mobile-tab-btn-itinerary" class="block w-full text-left px-3 py-3 rounded-md text-base font-medium text-slate-600 hover:text-slate-800 hover:bg-slate-50" data-key="tab_itinerary">每日行程</button>
+                <button onclick="switchTab('map')" id="mobile-tab-btn-map" class="block w-full text-left px-3 py-3 rounded-md text-base font-medium text-slate-600 hover:text-slate-800 hover:bg-slate-50" data-key="tab_map">地圖</button>
+                <button onclick="switchTab('routes')" id="mobile-tab-btn-routes" class="block w-full text-left px-3 py-3 rounded-md text-base font-medium text-slate-600 hover:text-slate-800 hover:bg-slate-50" data-key="tab_routes">路線攻略</button>
+                <button onclick="switchTab('budget')" id="mobile-tab-btn-budget" class="block w-full text-left px-3 py-3 rounded-md text-base font-medium text-slate-600 hover:text-slate-800 hover:bg-slate-50" data-key="tab_budget">預算</button>
+                <button onclick="switchTab('souvenirs')" id="mobile-tab-btn-souvenirs" class="block w-full text-left px-3 py-3 rounded-md text-base font-medium text-slate-600 hover:text-slate-800 hover:bg-slate-50" data-key="tab_souvenirs">伴手禮</button>
+                <button onclick="switchTab('prep')" id="mobile-tab-btn-prep" class="block w-full text-left px-3 py-3 rounded-md text-base font-medium text-slate-600 hover:text-slate-800 hover:bg-slate-50" data-key="tab_prep">準備</button>
             </div>
         </div>
     </nav>
@@ -106,26 +198,22 @@
 
             <!-- Key Stats -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                <div
-                    class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center">
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center">
                     <div class="text-3xl mb-1">📅</div>
                     <div class="text-sm text-slate-500 font-medium" data-key="stat_date">日期</div>
                     <div class="font-bold text-slate-800">2026/03/10 - 15</div>
                 </div>
-                <div
-                    class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center">
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center">
                     <div class="text-3xl mb-1">🌡️</div>
                     <div class="text-sm text-slate-500 font-medium" data-key="stat_weather">氣溫</div>
                     <div class="font-bold text-slate-800">18°C ~ 23°C</div>
                 </div>
-                <div
-                    class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center">
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center">
                     <div class="text-3xl mb-1">💴</div>
                     <div class="text-sm text-slate-500 font-medium" data-key="stat_rate">匯率預估</div>
                     <div class="font-bold text-slate-800">0.21</div>
                 </div>
-                <div
-                    class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center">
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center">
                     <div class="text-3xl mb-1">👥</div>
                     <div class="text-sm text-slate-500 font-medium" data-key="stat_mode">模式</div>
                     <div class="font-bold text-slate-800" data-key="stat_mode_val">自由行</div>
@@ -133,16 +221,13 @@
             </div>
 
             <!-- Flights -->
-            <h2 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2" data-key="flight_title">🛫 航班資訊
-            </h2>
+            <h2 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2" data-key="flight_title">🛫 航班資訊</h2>
             <div class="grid md:grid-cols-2 gap-6 mb-8">
                 <!-- Outbound -->
                 <div class="bg-white rounded-2xl shadow-sm border border-sky-100 overflow-hidden relative">
                     <div class="bg-sky-50 px-6 py-3 border-b border-sky-100 flex justify-between items-center">
                         <span class="font-bold text-sky-700" data-key="flight_out_date">去程 | 03/10 (二)</span>
-                        <a href="https://www.tigerairtw.com/zh-tw" target="_blank"
-                            class="text-xs bg-sky-200 text-sky-800 px-2 py-1 rounded-full hover:bg-sky-300 transition flex items-center gap-1"
-                            data-key="flight_out_code">台灣虎航 IT230 ↗</a>
+                        <a href="https://www.tigerairtw.com/zh-tw" target="_blank" class="text-xs bg-sky-200 text-sky-800 px-2 py-1 rounded-full hover:bg-sky-300 transition flex items-center gap-1" data-key="flight_out_code">台灣虎航 IT230 ↗</a>
                     </div>
                     <div class="p-6">
                         <div class="flex justify-between items-center mb-4">
@@ -161,8 +246,7 @@
                                 <div class="text-sm text-slate-500" data-key="flight_oka">那霸 OKA</div>
                             </div>
                         </div>
-                        <div class="text-sm bg-orange-50 text-orange-800 p-3 rounded-lg border border-orange-100"
-                            data-key="flight_out_note">
+                        <div class="text-sm bg-orange-50 text-orange-800 p-3 rounded-lg border border-orange-100" data-key="flight_out_note">
                             ⚠️ 04:30 請務必完成櫃台報到
                         </div>
                     </div>
@@ -172,9 +256,7 @@
                 <div class="bg-white rounded-2xl shadow-sm border border-sky-100 overflow-hidden relative">
                     <div class="bg-sky-50 px-6 py-3 border-b border-sky-100 flex justify-between items-center">
                         <span class="font-bold text-sky-700" data-key="flight_in_date">回程 | 03/15 (日)</span>
-                        <a href="https://www.airasia.com/zh/tw" target="_blank"
-                            class="text-xs bg-sky-200 text-sky-800 px-2 py-1 rounded-full hover:bg-sky-300 transition flex items-center gap-1"
-                            data-key="flight_in_code">泰亞航空 FD/SL231 ↗</a>
+                        <a href="https://www.airasia.com/zh/tw" target="_blank" class="text-xs bg-sky-200 text-sky-800 px-2 py-1 rounded-full hover:bg-sky-300 transition flex items-center gap-1" data-key="flight_in_code">泰亞航空 FD/SL231 ↗</a>
                     </div>
                     <div class="p-6">
                         <div class="flex justify-between items-center mb-4">
@@ -193,8 +275,7 @@
                                 <div class="text-sm text-slate-500" data-key="flight_tpe">桃機 TPE</div>
                             </div>
                         </div>
-                        <div class="text-sm bg-blue-50 text-blue-800 p-3 rounded-lg border border-blue-100"
-                            data-key="flight_in_note">
+                        <div class="text-sm bg-blue-50 text-blue-800 p-3 rounded-lg border border-blue-100" data-key="flight_in_note">
                             ℹ️ 請於 14:00 前抵達那霸機場
                         </div>
                     </div>
@@ -202,21 +283,15 @@
             </div>
 
             <!-- Accommodation -->
-            <h2 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2" data-key="hotel_title">🏨 住宿安排
-            </h2>
+            <h2 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2" data-key="hotel_title">🏨 住宿安排</h2>
             <div class="space-y-4">
                 <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 flex flex-col md:flex-row gap-4">
-                    <div
-                        class="flex-shrink-0 bg-indigo-50 w-full md:w-20 h-20 rounded-lg flex items-center justify-center text-3xl">
-                        🌊</div>
+                    <div class="flex-shrink-0 bg-indigo-50 w-full md:w-20 h-20 rounded-lg flex items-center justify-center text-3xl">🌊</div>
                     <div>
                         <div class="flex items-center gap-2 mb-1">
-                            <span class="text-xs font-bold bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded">Day
-                                1-2</span>
+                            <span class="text-xs font-bold bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded">Day 1-2</span>
                             <h3 class="font-bold text-lg text-slate-800">
-                                <a href="https://royalview-churaumi.com/" target="_blank"
-                                    class="hover:text-sky-600 flex items-center gap-1 transition-colors"
-                                    data-key="hotel_1_name">Royal View Hotel Churaumi ↗</a>
+                                <a href="https://royalview-churaumi.com/" target="_blank" class="hover:text-sky-600 flex items-center gap-1 transition-colors" data-key="hotel_1_name">Royal View Hotel Churaumi ↗</a>
                             </h3>
                         </div>
                         <p class="text-sm text-slate-600 mb-2">📍 938 Ishikawa, Motobu</p>
@@ -225,16 +300,12 @@
                 </div>
 
                 <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 flex flex-col md:flex-row gap-4">
-                    <div
-                        class="flex-shrink-0 bg-rose-50 w-full md:w-20 h-20 rounded-lg flex items-center justify-center text-3xl">
-                        🛍️</div>
+                    <div class="flex-shrink-0 bg-rose-50 w-full md:w-20 h-20 rounded-lg flex items-center justify-center text-3xl">🛍️</div>
                     <div>
                         <div class="flex items-center gap-2 mb-1">
                             <span class="text-xs font-bold bg-rose-100 text-rose-700 px-2 py-0.5 rounded">Day 3-5</span>
                             <h3 class="font-bold text-lg text-slate-800">
-                                <a href="https://hotel-naha-city.jp/" target="_blank"
-                                    class="hover:text-sky-600 flex items-center gap-1 transition-colors"
-                                    data-key="hotel_2_name">Hotel Naha City - Kokusai Street ↗</a>
+                                <a href="https://hotel-naha-city.jp/" target="_blank" class="hover:text-sky-600 flex items-center gap-1 transition-colors" data-key="hotel_2_name">Hotel Naha City - Kokusai Street ↗</a>
                             </h3>
                         </div>
                         <p class="text-sm text-slate-600 mb-2">📍 1 Chome-29-7 Matsuyama, Naha</p>
@@ -255,33 +326,27 @@
 
             <!-- Day Selector (Improved UX) -->
             <div class="flex space-x-2 overflow-x-auto pb-4 mb-4 no-scrollbar">
-                <button onclick="renderDay(1)" id="day-btn-1"
-                    class="day-selector active bg-sky-600 text-white shadow-md px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap min-w-[80px] flex flex-col items-center justify-center border border-transparent">
+                <button onclick="renderDay(1)" id="day-btn-1" class="day-selector active bg-sky-600 text-white shadow-md px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap min-w-[80px] flex flex-col items-center justify-center border border-transparent">
                     <span class="text-[10px] opacity-90 font-normal">3/10</span>
                     <span>Day 1</span>
                 </button>
-                <button onclick="renderDay(2)" id="day-btn-2"
-                    class="day-selector bg-white text-slate-600 border border-slate-200 px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap hover:bg-slate-50 min-w-[80px] flex flex-col items-center justify-center">
+                <button onclick="renderDay(2)" id="day-btn-2" class="day-selector bg-white text-slate-600 border border-slate-200 px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap hover:bg-slate-50 min-w-[80px] flex flex-col items-center justify-center">
                     <span class="text-[10px] text-slate-400 font-normal">3/11</span>
                     <span>Day 2</span>
                 </button>
-                <button onclick="renderDay(3)" id="day-btn-3"
-                    class="day-selector bg-white text-slate-600 border border-slate-200 px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap hover:bg-slate-50 min-w-[80px] flex flex-col items-center justify-center">
+                <button onclick="renderDay(3)" id="day-btn-3" class="day-selector bg-white text-slate-600 border border-slate-200 px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap hover:bg-slate-50 min-w-[80px] flex flex-col items-center justify-center">
                     <span class="text-[10px] text-slate-400 font-normal">3/12</span>
                     <span>Day 3</span>
                 </button>
-                <button onclick="renderDay(4)" id="day-btn-4"
-                    class="day-selector bg-white text-slate-600 border border-slate-200 px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap hover:bg-slate-50 min-w-[80px] flex flex-col items-center justify-center">
+                <button onclick="renderDay(4)" id="day-btn-4" class="day-selector bg-white text-slate-600 border border-slate-200 px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap hover:bg-slate-50 min-w-[80px] flex flex-col items-center justify-center">
                     <span class="text-[10px] text-slate-400 font-normal">3/13</span>
                     <span>Day 4</span>
                 </button>
-                <button onclick="renderDay(5)" id="day-btn-5"
-                    class="day-selector bg-white text-slate-600 border border-slate-200 px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap hover:bg-slate-50 min-w-[80px] flex flex-col items-center justify-center">
+                <button onclick="renderDay(5)" id="day-btn-5" class="day-selector bg-white text-slate-600 border border-slate-200 px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap hover:bg-slate-50 min-w-[80px] flex flex-col items-center justify-center">
                     <span class="text-[10px] text-slate-400 font-normal">3/14</span>
                     <span>Day 5</span>
                 </button>
-                <button onclick="renderDay(6)" id="day-btn-6"
-                    class="day-selector bg-white text-slate-600 border border-slate-200 px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap hover:bg-slate-50 min-w-[80px] flex flex-col items-center justify-center">
+                <button onclick="renderDay(6)" id="day-btn-6" class="day-selector bg-white text-slate-600 border border-slate-200 px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap hover:bg-slate-50 min-w-[80px] flex flex-col items-center justify-center">
                     <span class="text-[10px] text-slate-400 font-normal">3/15</span>
                     <span>Day 6</span>
                 </button>
@@ -301,18 +366,99 @@
                     所有景點與路線皆已整合在 Google My Maps 中。
                 </p>
             </div>
-
+            
             <div class="map-wrapper bg-slate-100">
-                <iframe src="https://www.google.com/maps/d/embed?mid=1MtgP2ghQ3aqyh1ip3Cb_ez3Eizm232o&ehbc=2E312F"
-                    width="100%" height="480"></iframe>
+                <iframe src="https://www.google.com/maps/d/embed?mid=1MtgP2ghQ3aqyh1ip3Cb_ez3Eizm232o&ehbc=2E312F" width="100%" height="480"></iframe>
             </div>
-
+            
             <div class="mt-4 flex gap-2 justify-center">
-                <a href="https://www.google.com/maps/d/edit?mid=1MtgP2ghQ3aqyh1ip3Cb_ez3Eizm232o&usp=sharing"
-                    target="_blank"
-                    class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-sky-700 bg-sky-100 hover:bg-sky-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500">
+                <a href="https://www.google.com/maps/d/edit?mid=1MtgP2ghQ3aqyh1ip3Cb_ez3Eizm232o&usp=sharing" target="_blank" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-sky-700 bg-sky-100 hover:bg-sky-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500">
                     <span class="mr-2">🗺️</span> <span data-key="open_map_btn">在 Google Maps App 開啟</span>
                 </a>
+            </div>
+        </div>
+
+        <!-- SECTION: ROUTES (NEW) -->
+        <div id="section-routes" class="hidden fade-in">
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold text-slate-900 mb-2" data-key="routes_title">路線攻略</h1>
+                <p class="text-slate-600" data-key="routes_desc">
+                    機場動線、逛街地圖與重點攻略整理。
+                </p>
+            </div>
+
+            <div class="grid gap-8">
+                <!-- Airport Guide -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                        <span>✈️</span> <span data-key="route_airport_title">機場攻略 (那霸 & 桃園)</span>
+                    </h3>
+                    <div class="space-y-6">
+                        <!-- TPE -->
+                        <div>
+                            <h4 class="font-bold text-slate-700 mb-2" data-key="route_tpe_title">桃園機場 T1 (去程)</h4>
+                            <div class="bg-slate-50 p-4 rounded-lg text-sm text-slate-600 space-y-2 border border-slate-100">
+                                <p><span class="font-bold">報到櫃台：</span> 7 號櫃台 (Tigerair)</p>
+                                <p><span class="font-bold">建議時間：</span> 04:30 抵達 (起飛前 2 小時)</p>
+                            </div>
+                        </div>
+                        <!-- OKA Arrival -->
+                        <div>
+                            <h4 class="font-bold text-slate-700 mb-2" data-key="route_oka_arr_title">那霸機場 (抵達動線)</h4>
+                            <div class="ml-2 border-l-2 border-sky-200 pl-4 space-y-4">
+                                <div class="route-step">
+                                    <span class="font-bold text-slate-800" data-key="route_step_1">國際線航廈 1F</span>
+                                    <p class="text-xs text-slate-500 mt-1">入境大廳，領取行李。</p>
+                                </div>
+                                <div class="route-step">
+                                    <span class="font-bold text-slate-800" data-key="route_step_2">步行至國內線航廈</span>
+                                    <p class="text-xs text-slate-500 mt-1">上 2F 走聯絡空橋 (步行約 5-10 分鐘) 或搭乘免費接駁車。</p>
+                                </div>
+                                <div class="route-step">
+                                    <span class="font-bold text-slate-800" data-key="route_step_3">OAS 巴士 / 單軌電車</span>
+                                    <p class="text-xs text-slate-500 mt-1">單軌在國內線 2F 聯通口；巴士在國內線 1F 外側站牌。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Shopping Routes -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                        <span>🛍️</span> <span data-key="route_shop_title">逛街路線推薦</span>
+                    </h3>
+                    
+                    <!-- Kokusai Dori -->
+                    <div class="mb-6">
+                        <h4 class="font-bold text-sky-700 mb-3" data-key="route_kokusai_title">國際通 (Kokusai Dori)</h4>
+                        <div class="bg-sky-50 p-4 rounded-xl text-sm space-y-3">
+                            <p data-key="route_kokusai_desc">建議從「縣廳前站」出發，一路逛到「牧志站」，全程約 1.6 公里。</p>
+                            <ol class="list-decimal list-inside space-y-1 text-slate-700 font-medium">
+                                <li>RYUBO 百貨 (縣廳前站旁) - 1F 有 Blue Seal</li>
+                                <li>御菓子御殿 (松尾店) - 必買紅芋塔</li>
+                                <li>Calbee+ (現炸薯條)</li>
+                                <li>唐吉訶德 (驚安殿堂) - 24H 營業</li>
+                                <li>平和通商店街 (有頂棚) - 藥妝、雜貨</li>
+                                <li>牧志公設市場 - 海鮮、食堂</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <!-- American Village -->
+                    <div>
+                        <h4 class="font-bold text-rose-700 mb-3" data-key="route_american_title">美國村 (American Village)</h4>
+                        <div class="bg-rose-50 p-4 rounded-xl text-sm space-y-3">
+                             <p data-key="route_american_desc">以 Depot Island 為中心，充滿美式風情與海景。</p>
+                             <ul class="list-disc list-inside space-y-1 text-slate-700 font-medium">
+                                <li>Depot Island (A~E棟) - 特色小店、古著</li>
+                                <li>Distortion Seaside Bldg - 海景咖啡廳集中地</li>
+                                <li>Sunset Beach (日落海灘) - 傍晚必去</li>
+                                <li>AEON 北谷店 - 超市補貨</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -328,8 +474,7 @@
             <div class="grid lg:grid-cols-2 gap-8 items-start">
                 <!-- Chart Section -->
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                    <h3 class="text-lg font-bold text-slate-700 mb-4 text-center" data-key="budget_chart_title">費用分佈比例
-                        (TWD)</h3>
+                    <h3 class="text-lg font-bold text-slate-700 mb-4 text-center" data-key="budget_chart_title">費用分佈比例 (TWD)</h3>
                     <div class="chart-container">
                         <canvas id="budgetChart"></canvas>
                     </div>
@@ -338,22 +483,17 @@
 
                 <!-- Breakdown Details -->
                 <div class="space-y-4">
-
+                    
                     <!-- 1. PAID Section -->
                     <div class="bg-emerald-50 p-5 rounded-xl shadow-sm border border-emerald-100">
-                        <h3
-                            class="font-bold text-emerald-800 mb-3 border-b border-emerald-200 pb-2 flex items-center gap-2">
+                        <h3 class="font-bold text-emerald-800 mb-3 border-b border-emerald-200 pb-2 flex items-center gap-2">
                             <span>✅</span> <span data-key="budget_paid_title">已付清費用 (Paid)</span>
                         </h3>
                         <ul class="space-y-2 text-sm text-emerald-900">
-                            <li class="flex justify-between"><span>✈️ 機票 (去+回)</span><span
-                                    class="font-mono font-medium">$9,693</span></li>
-                            <li class="flex justify-between"><span>🏨 住宿 (全行程)</span><span
-                                    class="font-mono font-medium">$9,494</span></li>
-                            <li class="flex justify-between"><span>🚙 包車 (Day 2)</span><span
-                                    class="font-mono font-medium">$1,790</span></li>
-                            <li class="flex justify-between"><span>🚌 南部觀光巴士</span><span
-                                    class="font-mono font-medium">$840</span></li>
+                            <li class="flex justify-between"><span>✈️ 機票 (去+回)</span><span class="font-mono font-medium">$9,693</span></li>
+                            <li class="flex justify-between"><span>🏨 住宿 (全行程)</span><span class="font-mono font-medium">$9,494</span></li>
+                            <li class="flex justify-between"><span>🚙 包車 (Day 2)</span><span class="font-mono font-medium">$1,790</span></li>
+                            <li class="flex justify-between"><span>🚌 南部觀光巴士</span><span class="font-mono font-medium">$840</span></li>
                             <li class="flex justify-between border-t border-emerald-200 pt-2 font-bold">
                                 <span>小計 (Subtotal)</span><span>$21,817</span>
                             </li>
@@ -366,16 +506,11 @@
                             <span>💳</span> <span data-key="budget_topay_title">出發前預付 (To Pay)</span>
                         </h3>
                         <ul class="space-y-2 text-sm text-sky-900">
-                            <li class="flex justify-between"><span>🚌 OAS 機場巴士</span><span
-                                    class="font-mono font-medium">~$504</span></li>
-                            <li class="flex justify-between"><span>🍺 Orion 門票</span><span
-                                    class="font-mono font-medium">~$210</span></li>
-                            <li class="flex justify-between"><span>🎟️ 沖繩 Fun Pass</span><span
-                                    class="font-mono font-medium">~$1,450</span></li>
-                            <li class="flex justify-between"><span>📱 SIM 卡</span><span
-                                    class="font-mono font-medium">~$330</span></li>
-                            <li class="flex justify-between"><span>🛡️ 旅遊保險 (預估)</span><span
-                                    class="font-mono font-medium">~$1,000</span></li>
+                            <li class="flex justify-between"><span>🚌 OAS 機場巴士</span><span class="font-mono font-medium">~$504</span></li>
+                            <li class="flex justify-between"><span>🍺 Orion 門票</span><span class="font-mono font-medium">~$210</span></li>
+                            <li class="flex justify-between"><span>🎟️ 沖繩 Fun Pass</span><span class="font-mono font-medium">~$1,450</span></li>
+                            <li class="flex justify-between"><span>📱 SIM 卡</span><span class="font-mono font-medium">~$330</span></li>
+                            <li class="flex justify-between"><span>🛡️ 旅遊保險 (預估)</span><span class="font-mono font-medium">~$1,000</span></li>
                             <li class="flex justify-between border-t border-sky-200 pt-2 font-bold">
                                 <span>小計 (Subtotal)</span><span>~$3,494</span>
                             </li>
@@ -384,31 +519,145 @@
 
                     <!-- 3. LOCAL Section -->
                     <div class="bg-amber-50 p-5 rounded-xl shadow-sm border border-amber-100">
-                        <h3
-                            class="font-bold text-amber-800 mb-3 border-b border-amber-200 pb-2 flex items-center gap-2">
+                        <h3 class="font-bold text-amber-800 mb-3 border-b border-amber-200 pb-2 flex items-center gap-2">
                             <span>💴</span> <span data-key="budget_local_title">當地開銷 (Local Cash/Card)</span>
                         </h3>
                         <ul class="space-y-2 text-sm text-amber-900">
-                            <li class="flex justify-between"><span>🚕 當地交通 (單軌/計程車)</span><span
-                                    class="font-mono font-medium">~$900</span></li>
-                            <li class="flex justify-between"><span>🍱 餐飲/雜支</span><span
-                                    class="font-mono font-medium">~$12,900</span></li>
+                            <li class="flex justify-between"><span>🚕 當地交通 (單軌/計程車)</span><span class="font-mono font-medium">~$900</span></li>
+                            <li class="flex justify-between"><span>🍱 餐飲/雜支</span><span class="font-mono font-medium">~$12,900</span></li>
                             <li class="flex justify-between text-xs text-amber-700 pl-4 border-l-2 border-amber-200">
                                 <span>🏥 VJW 額外保險 (落地視需求加保)</span>
                             </li>
                             <li class="flex justify-between border-t border-amber-200 pt-2 font-bold">
                                 <span>小計 (Subtotal)</span><span>~$13,800</span>
                             </li>
-                            <li class="text-xs text-amber-700/80 text-right mt-1">
+                             <li class="text-xs text-amber-700/80 text-right mt-1">
                                 (約 65,000 ~ 70,000 JPY)
                             </li>
                         </ul>
                     </div>
-
+                    
                     <div class="text-right text-xs text-slate-400 font-medium mt-2">
                         Total Estimate: ~$39,111 TWD
                     </div>
 
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION: SOUVENIRS -->
+        <div id="section-souvenirs" class="hidden fade-in">
+             <div class="mb-8">
+                <h1 class="text-3xl font-bold text-slate-900 mb-2" data-key="souvenir_title">必買伴手禮推薦</h1>
+                <p class="text-slate-600" data-key="souvenir_desc">
+                    為您精選沖繩最受歡迎的伴手禮清單，包含經典甜點、下酒零食與特色名產。
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Category 1: Classic Sweets -->
+                <div class="bg-white rounded-2xl shadow-sm border border-rose-100 overflow-hidden">
+                    <div class="bg-rose-50 px-4 py-3 border-b border-rose-100 font-bold text-rose-700 flex items-center gap-2">
+                        <span>🍠</span> <span data-key="souv_cat_sweets">經典甜點</span>
+                    </div>
+                    <div class="p-4 space-y-4">
+                        <div class="border-b border-slate-100 pb-3 last:border-0 last:pb-0">
+                            <h4 class="font-bold text-slate-800" data-key="souv_item_1_name">元祖紅芋塔</h4>
+                            <p class="text-xs text-slate-500 mt-1">御菓子御殿 紅いもタルト</p>
+                            <p class="text-sm text-slate-600 mt-2" data-key="souv_item_1_desc">沖繩最具代表性的伴手禮。使用100%沖繩產紅芋，口感綿密甜而不膩。</p>
+                            <div class="mt-2 text-xs bg-slate-100 inline-block px-2 py-1 rounded text-slate-500">📍 國際通、機場、各大景點</div>
+                        </div>
+                        <div class="border-b border-slate-100 pb-3 last:border-0 last:pb-0">
+                            <h4 class="font-bold text-slate-800" data-key="souv_item_2_name">宮古島雪鹽餅</h4>
+                            <p class="text-xs text-slate-500 mt-1">雪塩ちんすこう</p>
+                            <p class="text-sm text-slate-600 mt-2" data-key="souv_item_2_desc">傳統金楚糕結合宮古島雪鹽，鹹甜交織的絕妙滋味，口感酥脆。</p>
+                            <div class="mt-2 text-xs bg-slate-100 inline-block px-2 py-1 rounded text-slate-500">📍 國際通、超市、便利商店</div>
+                        </div>
+                        <div class="border-b border-slate-100 pb-3 last:border-0 last:pb-0">
+                            <h4 class="font-bold text-slate-800" data-key="souv_item_5_name">福木屋 年輪蛋糕</h4>
+                            <p class="text-xs text-slate-500 mt-1">ふくぎや バウムクーヘン</p>
+                            <p class="text-sm text-slate-600 mt-2" data-key="souv_item_5_desc">國際通上的排隊名店，使用沖繩黑糖與蜂蜜製作，層次豐富，香氣濃郁。</p>
+                            <div class="mt-2 text-xs bg-slate-100 inline-block px-2 py-1 rounded text-slate-500">📍 國際通本店、那霸機場</div>
+                        </div>
+                        <div class="border-b border-slate-100 pb-3 last:border-0 last:pb-0">
+                            <h4 class="font-bold text-slate-800" data-key="souv_item_9_name">Calbee+ 沖繩限定薯塊</h4>
+                            <p class="text-xs text-slate-500 mt-1">美らぽて (Chura Pote)</p>
+                            <p class="text-sm text-slate-600 mt-2" data-key="souv_item_9_desc">使用三種沖繩產地瓜製作，骰子形狀一口接一口，黑糖口味最受歡迎。</p>
+                            <div class="mt-2 text-xs bg-slate-100 inline-block px-2 py-1 rounded text-slate-500">📍 國際通 Calbee+ 專賣店</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Category 2: Savory Snacks -->
+                <div class="bg-white rounded-2xl shadow-sm border border-amber-100 overflow-hidden">
+                    <div class="bg-amber-50 px-4 py-3 border-b border-amber-100 font-bold text-amber-700 flex items-center gap-2">
+                        <span>🦐</span> <span data-key="souv_cat_savory">鹹食下酒</span>
+                    </div>
+                    <div class="p-4 space-y-4">
+                        <div class="border-b border-slate-100 pb-3 last:border-0 last:pb-0">
+                            <h4 class="font-bold text-slate-800" data-key="souv_item_3_name">南風堂 辣味蝦餅</h4>
+                            <p class="text-xs text-slate-500 mt-1">島とうがらしえびせんべい</p>
+                            <p class="text-sm text-slate-600 mt-2" data-key="souv_item_3_desc">薄脆口感帶有濃郁蝦味與島辣椒的微辣，絕對是配啤酒的最佳夥伴。</p>
+                            <div class="mt-2 text-xs bg-slate-100 inline-block px-2 py-1 rounded text-slate-500">📍 國際通、機場</div>
+                        </div>
+                        <div class="border-b border-slate-100 pb-3 last:border-0 last:pb-0">
+                            <h4 class="font-bold text-slate-800" data-key="souv_item_8_name">Orion 啤酒酵母花生</h4>
+                            <p class="text-xs text-slate-500 mt-1">オリオンビアナッツ</p>
+                            <p class="text-sm text-slate-600 mt-2" data-key="souv_item_8_desc">Orion 啤酒廠的經典下酒菜，有三種口味（塔可、咖哩、起司），越吃越涮嘴。</p>
+                            <div class="mt-2 text-xs bg-slate-100 inline-block px-2 py-1 rounded text-slate-500">📍 Orion 啤酒廠、超市、唐吉訶德</div>
+                        </div>
+                         <div class="border-b border-slate-100 pb-3 last:border-0 last:pb-0">
+                            <h4 class="font-bold text-slate-800" data-key="souv_item_4_name">石垣島辣油</h4>
+                            <p class="text-xs text-slate-500 mt-1">辺銀食堂 石垣島ラー油</p>
+                            <p class="text-sm text-slate-600 mt-2" data-key="souv_item_4_desc">邊銀食堂出品，香氣十足但不死辣，拌麵、沾餃子都非常適合。</p>
+                            <div class="mt-2 text-xs bg-slate-100 inline-block px-2 py-1 rounded text-slate-500">📍 國際通名產店、邊銀食堂</div>
+                        </div>
+                        <div class="border-b border-slate-100 pb-3 last:border-0 last:pb-0">
+                            <h4 class="font-bold text-slate-800" data-key="souv_item_10_name">香檬洋芋片</h4>
+                            <p class="text-xs text-slate-500 mt-1">シークヮーサー ポテトチップス</p>
+                            <p class="text-sm text-slate-600 mt-2" data-key="souv_item_10_desc">沖繩特產香檬調味，酸鹹清爽，解膩又開胃的限定口味。</p>
+                            <div class="mt-2 text-xs bg-slate-100 inline-block px-2 py-1 rounded text-slate-500">📍 超市、便利商店、唐吉訶德</div>
+                        </div>
+                        <div class="border-b border-slate-100 pb-3 last:border-0 last:pb-0">
+                            <h4 class="font-bold text-slate-800" data-key="souv_item_11_name">沖繩泡麵</h4>
+                            <p class="text-xs text-slate-500 mt-1">沖縄そば (インスタント)</p>
+                            <p class="text-sm text-slate-600 mt-2" data-key="souv_item_11_desc">把沖繩麵的美味帶回家，推薦日清的沖繩限定版，湯頭還原度高。</p>
+                            <div class="mt-2 text-xs bg-slate-100 inline-block px-2 py-1 rounded text-slate-500">📍 超市、便利商店</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Category 3: Specialty -->
+                <div class="bg-white rounded-2xl shadow-sm border border-emerald-100 overflow-hidden">
+                    <div class="bg-emerald-50 px-4 py-3 border-b border-emerald-100 font-bold text-emerald-700 flex items-center gap-2">
+                        <span>☕</span> <span data-key="souv_cat_special">特色名產</span>
+                    </div>
+                    <div class="p-4 space-y-4">
+                        <div class="border-b border-slate-100 pb-3 last:border-0 last:pb-0">
+                            <h4 class="font-bold text-slate-800" data-key="souv_item_6_name">ROYCE' 石垣島鹽巧克力洋芋片</h4>
+                            <p class="text-xs text-slate-500 mt-1">ロイズ石垣島 ポテトチップチョコレート</p>
+                            <p class="text-sm text-slate-600 mt-2" data-key="souv_item_6_desc">北海道知名品牌 ROYCE' 的沖繩限定版，石垣島海鹽與巧克力的鹹甜完美結合。</p>
+                            <div class="mt-2 text-xs bg-slate-100 inline-block px-2 py-1 rounded text-slate-500">📍 那霸機場、部分名產店</div>
+                        </div>
+                        <div class="border-b border-slate-100 pb-3 last:border-0 last:pb-0">
+                            <h4 class="font-bold text-slate-800" data-key="souv_item_7_name">35 COFFEE (珊瑚咖啡)</h4>
+                            <p class="text-xs text-slate-500 mt-1">35 COFFEE</p>
+                            <p class="text-sm text-slate-600 mt-2" data-key="souv_item_7_desc">利用風化珊瑚烘焙的咖啡豆，部分收益用於珊瑚保育。味道溫和順口。</p>
+                            <div class="mt-2 text-xs bg-slate-100 inline-block px-2 py-1 rounded text-slate-500">📍 單軌車站店鋪、唐吉訶德</div>
+                        </div>
+                        <div class="border-b border-slate-100 pb-3 last:border-0 last:pb-0">
+                            <h4 class="font-bold text-slate-800" data-key="souv_item_12_name">沖繩限定海帶芽</h4>
+                            <p class="text-xs text-slate-500 mt-1">沖縄限定 スープの具 (乾燥わかめ)</p>
+                            <p class="text-sm text-slate-600 mt-2" data-key="souv_item_12_desc">充滿海洋鮮味，泡熱水即可食用，煮湯必備的懶人料理好物。</p>
+                            <div class="mt-2 text-xs bg-slate-100 inline-block px-2 py-1 rounded text-slate-500">📍 國際通名產店、超市</div>
+                        </div>
+                        <div class="border-b border-slate-100 pb-3 last:border-0 last:pb-0">
+                            <h4 class="font-bold text-slate-800" data-key="souv_item_13_name">沖繩黑糖</h4>
+                            <p class="text-xs text-slate-500 mt-1">沖縄黒糖</p>
+                            <p class="text-sm text-slate-600 mt-2" data-key="souv_item_13_desc">礦物質豐富，口感醇厚，適合單吃、加入咖啡或料理使用。</p>
+                            <div class="mt-2 text-xs bg-slate-100 inline-block px-2 py-1 rounded text-slate-500">📍 隨處可見</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -435,56 +684,41 @@
                 <div class="space-y-6">
                     <!-- Apps & Links -->
                     <div class="bg-indigo-50 p-6 rounded-2xl border border-indigo-100">
-                        <h3 class="text-lg font-bold text-indigo-800 mb-3" data-key="app_link_title">📱 推薦 App & 預約連結
-                        </h3>
+                        <h3 class="text-lg font-bold text-indigo-800 mb-3" data-key="app_link_title">📱 推薦 App & 預約連結</h3>
                         <ul class="space-y-3 text-sm text-indigo-900">
                             <li>
-                                <a href="https://vjw-lp.digital.go.jp/zh-hant/" target="_blank"
-                                    class="flex items-start gap-2 hover:bg-indigo-100 p-2 rounded-lg transition-colors group">
+                                <a href="https://vjw-lp.digital.go.jp/zh-hant/" target="_blank" class="flex items-start gap-2 hover:bg-indigo-100 p-2 rounded-lg transition-colors group">
                                     <span class="text-lg">🌐</span>
                                     <div>
-                                        <b
-                                            class="group-hover:text-indigo-700 underline decoration-indigo-300 underline-offset-2">Visit
-                                            Japan Web</b>
-                                        <p class="text-indigo-700/80 text-xs mt-0.5" data-key="link_vjw_desc">入境審查與海關申報
-                                            QR Code</p>
+                                        <b class="group-hover:text-indigo-700 underline decoration-indigo-300 underline-offset-2">Visit Japan Web</b>
+                                        <p class="text-indigo-700/80 text-xs mt-0.5" data-key="link_vjw_desc">入境審查與海關申報 QR Code</p>
                                     </div>
                                 </a>
                             </li>
                             <li>
-                                <a href="https://www.orionbeer.co.jp/brewerytour/" target="_blank"
-                                    class="flex items-start gap-2 hover:bg-indigo-100 p-2 rounded-lg transition-colors group">
+                                <a href="https://www.orionbeer.co.jp/brewerytour/" target="_blank" class="flex items-start gap-2 hover:bg-indigo-100 p-2 rounded-lg transition-colors group">
                                     <span class="text-lg">🍺</span>
                                     <div>
-                                        <b class="group-hover:text-indigo-700 underline decoration-indigo-300 underline-offset-2"
-                                            data-key="link_orion_title">Orion 啤酒廠預約</b>
-                                        <p class="text-indigo-700/80 text-xs mt-0.5" data-key="link_orion_desc">
-                                            參觀工廠需提前官網預約</p>
+                                        <b class="group-hover:text-indigo-700 underline decoration-indigo-300 underline-offset-2" data-key="link_orion_title">Orion 啤酒廠預約</b>
+                                        <p class="text-indigo-700/80 text-xs mt-0.5" data-key="link_orion_desc">參觀工廠需提前官網預約</p>
                                     </div>
                                 </a>
                             </li>
                             <li>
-                                <a href="https://www.yakiniku-king.jp/shop_search/1854" target="_blank"
-                                    class="flex items-start gap-2 hover:bg-indigo-100 p-2 rounded-lg transition-colors group">
+                                <a href="https://www.yakiniku-king.jp/shop_search/1854" target="_blank" class="flex items-start gap-2 hover:bg-indigo-100 p-2 rounded-lg transition-colors group">
                                     <span class="text-lg">🍖</span>
                                     <div>
-                                        <b class="group-hover:text-indigo-700 underline decoration-indigo-300 underline-offset-2"
-                                            data-key="link_yakiniku_title">燒肉王 (久茂地店)</b>
-                                        <p class="text-indigo-700/80 text-xs mt-0.5" data-key="link_yakiniku_desc">
-                                            熱門時段建議提前一個月預約</p>
+                                        <b class="group-hover:text-indigo-700 underline decoration-indigo-300 underline-offset-2" data-key="link_yakiniku_title">燒肉王 (久茂地店)</b>
+                                        <p class="text-indigo-700/80 text-xs mt-0.5" data-key="link_yakiniku_desc">熱門時段建議提前一個月預約</p>
                                     </div>
                                 </a>
                             </li>
-                            <li>
-                                <a href="https://www.okinawa-shuttle.co.jp/tc/" target="_blank"
-                                    class="flex items-start gap-2 hover:bg-indigo-100 p-2 rounded-lg transition-colors group">
+                             <li>
+                                <a href="https://www.okinawa-shuttle.co.jp/tc/" target="_blank" class="flex items-start gap-2 hover:bg-indigo-100 p-2 rounded-lg transition-colors group">
                                     <span class="text-lg">🚌</span>
                                     <div>
-                                        <b
-                                            class="group-hover:text-indigo-700 underline decoration-indigo-300 underline-offset-2">OAS
-                                            Bus</b>
-                                        <p class="text-indigo-700/80 text-xs mt-0.5" data-key="link_oas_desc">機場接駁巴士預約
-                                        </p>
+                                        <b class="group-hover:text-indigo-700 underline decoration-indigo-300 underline-offset-2">OAS Bus</b>
+                                        <p class="text-indigo-700/80 text-xs mt-0.5" data-key="link_oas_desc">機場接駁巴士預約</p>
                                     </div>
                                 </a>
                             </li>
@@ -516,6 +750,600 @@
 
     </main>
 
-</body>
+    <script>
+        // --- Translations ---
+        const translations = {
+            'zh-TW': {
+                nav_title: "沖繩 2026",
+                tab_overview: "總覽", tab_itinerary: "每日行程", tab_map: "地圖", tab_budget: "預算", tab_prep: "準備", tab_souvenirs: "伴手禮", tab_routes: "路線攻略",
+                
+                overview_title: "旅程概覽",
+                overview_desc: "歡迎來到您的 2026 沖繩六天五夜自由行儀表板。此區塊彙整了最關鍵的航班與住宿資訊。",
+                stat_date: "日期", stat_weather: "氣溫", stat_rate: "匯率預估", stat_mode: "模式", stat_mode_val: "自由行",
+                
+                flight_title: "🛫 航班資訊", flight_out_date: "去程 | 03/10 (二)", flight_out_code: "台灣虎航 IT230 ↗",
+                flight_tpe: "桃機 TPE", flight_oka: "那霸 OKA", flight_duration_out: "約 1h 20m", flight_duration_in: "約 1h 40m",
+                flight_out_note: "⚠️ 04:30 請務必完成櫃台報到", flight_in_date: "回程 | 03/15 (日)", flight_in_code: "泰亞航空 FD/SL231 ↗",
+                flight_in_note: "ℹ️ 請於 14:00 前抵達那霸機場",
+                
+                hotel_title: "🏨 住宿安排", hotel_1_name: "Royal View Hotel Churaumi ↗", hotel_1_desc: "美麗海水族館旁，步行可達，北部行程基地。",
+                hotel_2_name: "Hotel Naha City - Kokusai Street ↗", hotel_2_desc: "靠近國際通，購物與交通便利。",
 
+                itinerary_title: "每日詳細行程", itinerary_desc: "點選上方的日期標籤即可切換查看當日的時間軸。行程已標註相關連結與預估花費。",
+                
+                map_title: "行程地圖", map_desc: "所有景點與路線皆已整合在 Google My Maps 中。", open_map_btn: "在 Google Maps App 開啟",
+                
+                routes_title: "路線攻略", routes_desc: "機場動線、逛街地圖與重點攻略整理。",
+                route_airport_title: "機場攻略 (那霸 & 桃園)",
+                route_tpe_title: "桃園機場 T1 (去程)",
+                route_oka_arr_title: "那霸機場 (抵達動線)",
+                route_step_1: "國際線航廈 1F",
+                route_step_2: "步行至國內線航廈",
+                route_step_3: "OAS 巴士 / 單軌電車",
+                route_shop_title: "逛街路線推薦",
+                route_kokusai_title: "國際通 (Kokusai Dori)",
+                route_kokusai_desc: "建議從「縣廳前站」出發，一路逛到「牧志站」，全程約 1.6 公里。",
+                route_american_title: "美國村 (American Village)",
+                route_american_desc: "以 Depot Island 為中心，充滿美式風情與海景。",
+
+                budget_title: "預算分析", budget_desc: "預估每人總花費約 $39,100 TWD。請準備足夠日幣現金。",
+                budget_chart_title: "費用分佈比例 (TWD)", budget_note: "* 餐費為高標估算，依個人消費而異",
+                
+                budget_paid_title: "已付清費用 (Paid)",
+                budget_topay_title: "出發前預付 (To Pay)",
+                budget_local_title: "當地開銷 (Local Cash/Card)",
+
+                cat_flight_out: "✈️ 去程機票 (虎航)", cat_flight_in: "✈️ 回程機票 (泰亞+手續費)",
+                cat_stay_royal: "🏨 住宿: Royal View", cat_stay_naha: "🏨 住宿: Naha City", cat_stay_fee: "💸 住宿手續費", 
+                cat_transport: "🚌 交通總計", cat_ticket: "🎟️ 票券/雜支/保險", cat_food: "🍱 餐飲/雜支", cat_total_est: "預估小計",
+                
+                souvenir_title: "必買伴手禮推薦", souvenir_desc: "為您精選沖繩最受歡迎的伴手禮清單，包含經典甜點、下酒零食與特色名產。",
+                souv_cat_sweets: "經典甜點", souv_cat_savory: "鹹食下酒", souv_cat_special: "特色名產",
+                souv_item_1_name: "元祖紅芋塔", souv_item_1_desc: "沖繩最具代表性的伴手禮。使用100%沖繩產紅芋，口感綿密甜而不膩。",
+                souv_item_2_name: "宮古島雪鹽餅", souv_item_2_desc: "傳統金楚糕結合宮古島雪鹽，鹹甜交織的絕妙滋味，口感酥脆。",
+                souv_item_3_name: "南風堂 辣味蝦餅", souv_item_3_desc: "薄脆口感帶有濃郁蝦味與島辣椒的微辣，絕對是配啤酒的最佳夥伴。",
+                souv_item_4_name: "石垣島辣油", souv_item_4_desc: "邊銀食堂出品，香氣十足但不死辣，拌麵、沾餃子都非常適合。",
+                souv_item_5_name: "福木屋 年輪蛋糕", souv_item_5_desc: "國際通上的排隊名店，使用沖繩黑糖與蜂蜜製作，層次豐富，香氣濃郁。",
+                souv_item_6_name: "ROYCE' 石垣島鹽巧克力洋芋片", souv_item_6_desc: "北海道知名品牌 ROYCE' 的沖繩限定版，石垣島海鹽與巧克力的鹹甜完美結合。",
+                souv_item_7_name: "35 COFFEE (珊瑚咖啡)", souv_item_7_desc: "利用風化珊瑚烘焙的咖啡豆，部分收益用於珊瑚保育。味道溫和順口。",
+                souv_item_8_name: "Orion 啤酒酵母花生", souv_item_8_desc: "Orion 啤酒廠的經典下酒菜，有三種口味（塔可、咖哩、起司），越吃越涮嘴。",
+                souv_item_9_name: "Calbee+ 沖繩限定薯塊", souv_item_9_desc: "使用三種沖繩產地瓜製作，骰子形狀一口接一口，黑糖口味最受歡迎。",
+                souv_item_10_name: "香檬洋芋片", souv_item_10_desc: "沖繩特產香檬調味，酸鹹清爽，解膩又開胃的限定口味。",
+                souv_item_11_name: "沖繩泡麵", souv_item_11_desc: "把沖繩麵的美味帶回家，推薦日清的沖繩限定版，湯頭還原度高。",
+                souv_item_12_name: "沖繩限定海帶芽", souv_item_12_desc: "充滿海洋鮮味，泡熱水即可食用，煮湯必備的懶人料理好物。",
+                souv_item_13_name: "沖繩黑糖", souv_item_13_desc: "礦物質豐富，口感醇厚，適合單吃、加入咖啡或料理使用。",
+
+                prep_title: "行前準備與檢查", prep_desc: "出發前請逐一確認以下項目。",
+                checklist_title: "✅ 出發前檢查清單",
+                app_link_title: "📱 推薦 App & 預約連結", link_vjw_desc: "入境審查與海關申報 QR Code",
+                link_orion_title: "Orion 啤酒廠預約", link_orion_desc: "參觀工廠需提前官網預約",
+                link_yakiniku_title: "燒肉王 (久茂地店)", link_yakiniku_desc: "熱門時段建議提前一個月預約",
+                link_oas_desc: "機場接駁巴士預約",
+                emergency_title: "🆘 緊急聯絡", emergency_ambulance: "救護車 / 火警", emergency_police: "警察", emergency_office: "台北駐日經濟文化代表處那霸分處",
+
+                // Checklist Items
+                chk_passport: "護照 (效期需 6 個月以上)", chk_vjw: "VJW 登錄 (入境 QR Code)", chk_flight_tix: "機票憑證存入手機",
+                chk_hotel_tix: "住宿憑證存入手機", chk_bus_res: "預約確認: OAS 巴士", chk_car_res: "預約確認: 包車司機",
+                chk_orion_res: "預約確認: Orion 啤酒廠", chk_tour_res: "預約確認: 南部觀光巴士", chk_sim: "開通網卡/漫遊",
+                chk_cash: "準備日幣現金", chk_license: "駕照日文譯本 (備用)",
+
+                // Chart Labels
+                chart_flight: "機票", chart_stay: "住宿", chart_transport: "交通", chart_ticket: "票券/雜支", chart_food: "餐飲"
+            },
+            'ja-JP': {
+                nav_title: "沖縄 2026",
+                tab_overview: "概要", tab_itinerary: "日程", tab_map: "地図", tab_budget: "予算", tab_prep: "準備", tab_souvenirs: "お土産", tab_routes: "ルート",
+                
+                overview_title: "旅の概要",
+                overview_desc: "2026年沖縄5泊6日の個人旅行ダッシュボードへようこそ。フライトと宿泊の重要情報をまとめました。",
+                stat_date: "日程", stat_weather: "気温", stat_rate: "レート予測", stat_mode: "モード", stat_mode_val: "個人旅行",
+                
+                flight_title: "🛫 フライト情報", flight_out_date: "往路 | 03/10 (火)", flight_out_code: "タイガーエア IT230 ↗",
+                flight_tpe: "台北桃園 TPE", flight_oka: "那覇 OKA", flight_duration_out: "約 1時間20分", flight_duration_in: "約 1時間40分",
+                flight_out_note: "⚠️ 04:30 チェックイン締切", flight_in_date: "復路 | 03/15 (日)", flight_in_code: "タイ・エアアジア FD/SL231 ↗",
+                flight_in_note: "ℹ️ 14:00までに空港到着推奨",
+                
+                hotel_title: "🏨 宿泊先", hotel_1_name: "ロイヤルビューホテル美ら海 ↗", hotel_1_desc: "美ら海水族館の隣、徒歩圏内。北部の拠点に最適。",
+                hotel_2_name: "ホテル那覇シティ 国際通り ↗", hotel_2_desc: "国際通り近く、買い物や交通に便利。",
+
+                itinerary_title: "詳細スケジュール", itinerary_desc: "上の日付ボタンをタップして、当日のタイムラインを表示します。",
+                
+                map_title: "旅行マップ", map_desc: "すべての観光スポットとルートはGoogleマイマップに統合されています。", open_map_btn: "Googleマップで開く",
+
+                routes_title: "ルート攻略", routes_desc: "空港の動線、ショッピングマップ、主要ルートのまとめ。",
+                route_airport_title: "空港ガイド (那覇 & 桃園)",
+                route_tpe_title: "桃園空港 T1 (往路)",
+                route_oka_arr_title: "那覇空港 (到着動線)",
+                route_step_1: "国際線ターミナル 1F",
+                route_step_2: "国内線ターミナルへ移動",
+                route_step_3: "OASバス / ゆいレール",
+                route_shop_title: "おすすめ買物ルート",
+                route_kokusai_title: "国際通り (Kokusai Dori)",
+                route_kokusai_desc: "「県庁前駅」からスタートし、「牧志駅」まで歩くのがおすすめ（約1.6km）。",
+                route_american_title: "アメリカンビレッジ (American Village)",
+                route_american_desc: "デポアイランドを中心に、アメリカンな雰囲気と海を楽しむ。",
+
+                budget_title: "予算分析", budget_desc: "一人当たりの総費用は約 39,100 TWD (約 19万円) です。",
+                budget_chart_title: "費用内訳 (TWD)", budget_note: "* 食費は最大見積もりです",
+                budget_list_title: "詳細見積もり (一人当たり)",
+                budget_paid_title: "支払済費用 (Paid)", budget_unpaid_title: "出発前支払い (To Pay)", budget_local_title: "現地費用 (Local)",
+                
+                cat_flight_out: "✈️ 往路航空券 (タイガー)", cat_flight_in: "✈️ 復路航空券 (エアアジア+手数料)",
+                cat_stay_royal: "🏨 宿泊: ロイヤルビュー", cat_stay_naha: "🏨 宿泊: 那覇シティ", cat_stay_fee: "💸 宿泊手数料",
+                cat_transport: "🚌 交通費合計", cat_ticket: "🎟️ 入場券/その他", cat_food: "🍱 食費/雑費", cat_total_est: "見積もり小計",
+                cash_tip_title: "💡 現金の準備", cash_tip_desc: "一部の老舗やタクシーは現金のみです。4万〜7万円をご用意ください。",
+                
+                souvenir_title: "おすすめお土産", souvenir_desc: "沖縄で人気のお土産リスト。定番スイーツ、おつまみ、名産品を厳選。",
+                souv_cat_sweets: "定番スイーツ", souv_cat_savory: "おつまみ", souv_cat_special: "名産品",
+                souv_item_1_name: "元祖紅いもタルト", souv_item_1_desc: "沖縄土産の代名詞。沖縄県産紅芋100%使用、濃厚で程よい甘さ。",
+                souv_item_2_name: "雪塩ちんすこう", souv_item_2_desc: "伝統菓子ちんすこうに宮古島の雪塩をブレンド。甘じょっぱさが絶妙。",
+                souv_item_3_name: "島とうがらしえびせんべい", souv_item_3_desc: "海老の風味と島唐辛子のピリ辛が癖になる。ビールのお供に最適。",
+                souv_item_4_name: "石垣島ラー油", souv_item_4_desc: "辺銀食堂の食べるラー油。香りが良く、辛すぎない。餃子や麺類に。",
+                souv_item_5_name: "ふくぎや バウムクーヘン", souv_item_5_desc: "国際通りの人気店。黒糖や蜂蜜を使用し、しっとりとした層が特徴。",
+                souv_item_6_name: "ロイズ石垣島 ポテトチップチョコレート", souv_item_6_desc: "ROYCE'の沖縄限定品。石垣島の塩とチョコのハーモニー。",
+                souv_item_7_name: "35 COFFEE", souv_item_7_desc: "風化したサンゴで焙煎したコーヒー。売上の一部はサンゴ保護活動へ。",
+                souv_item_8_name: "オリオンビアナッツ", souv_item_8_desc: "オリオンビールの定番おつまみ。タコス、カレー、チーズの3つの味。",
+                souv_item_9_name: "Calbee+ 美らぽて", souv_item_9_desc: "沖縄県産サツマイモ3種を使用。サイコロ状で食べやすく、黒糖味が人気。",
+                souv_item_10_name: "シークヮーサー ポテトチップス", souv_item_10_desc: "沖縄特産シークヮーサー味。酸味と塩気が爽やかで、さっぱりとした限定フレーバー。",
+                souv_item_11_name: "沖縄そば (インスタント)", souv_item_11_desc: "沖縄そばの美味しさを自宅で。日清の沖縄限定版はスープの再現度が高い。",
+                souv_item_12_name: "沖縄限定 スープの具 (乾燥わかめ)", souv_item_12_desc: "海の旨味が凝縮。お湯を注ぐだけで美味しいスープになる、便利な一品。",
+                souv_item_13_name: "沖縄黒糖", souv_item_13_desc: "ミネラル豊富でコクのある味わい。そのまま食べたり、コーヒーや料理に使ったり。",
+
+                prep_title: "事前準備・チェック", prep_desc: "出発前に以下の項目を確認してください。",
+                checklist_title: "✅ 出発前チェックリスト",
+                app_link_title: "📱 アプリ & 予約リンク", link_vjw_desc: "入国審査・税関申告 QRコード",
+                link_orion_title: "オリオンビール工場予約", link_orion_desc: "工場見学は事前予約が必要です",
+                link_yakiniku_title: "焼肉きんぐ (久茂地店)", link_yakiniku_desc: "混雑時は1ヶ月前の予約を推奨",
+                link_oas_desc: "空港シャトルバス予約",
+                emergency_title: "🆘 緊急連絡先", emergency_ambulance: "救急車 / 消防", emergency_police: "警察", emergency_office: "台北駐日経済文化代表処 那覇分処",
+
+                // Checklist Items
+                chk_passport: "パスポート (有効期限6ヶ月以上)", chk_vjw: "VJW登録 (入国QR)", chk_flight_tix: "Eチケット保存",
+                chk_hotel_tix: "宿泊バウチャー保存", chk_bus_res: "予約確認: OASバス", chk_car_res: "予約確認: 貸切タクシー",
+                chk_orion_res: "予約確認: オリオンビール", chk_tour_res: "予約確認: 南部バスツアー", chk_sim: "SIM/ローミング設定",
+                chk_cash: "日本円の準備", chk_license: "免許証翻訳 (予備)",
+
+                // Chart Labels
+                chart_flight: "航空券", chart_stay: "宿泊", chart_transport: "交通", chart_ticket: "チケット", chart_food: "食費"
+            }
+        };
+
+        // --- Data ---
+        let currentLang = 'zh-TW';
+
+        const itineraryData = {
+            'zh-TW': {
+                1: {
+                    title: "初抵沖繩・前進北部",
+                    date: "03/10 (二)",
+                    events: [
+                        { time: "04:30", icon: "🛂", title: "桃園機場報到", desc: "第一航廈 IT230 (06:35起飛)", link: "https://www.tigerairtw.com/zh-tw", cost: "已付清 (NT$4,649)" },
+                        { time: "08:55", icon: "🛬", title: "抵達那霸機場", desc: "出關、寄放行李、機場早餐(A&W/豬肉蛋飯糰)", cost: "¥400-1800", link: "https://www.naha-airport.co.jp/zh-hant/" },
+                        { time: "11:50", icon: "⛩️", title: "波上宮 & 海灘", desc: "參拜、買書包御守、踏浪 (停留 2hr)", cost: "¥1300-2300", link: "http://naminouegu.jp/" },
+                        { time: "14:40", icon: "🚌", title: "搭乘 OAS 接駁巴士", desc: "需預約，前往美麗海紀念公園前站", cost: "¥2400 (已付)", link: "https://www.okinawa-shuttle.co.jp/tc/" },
+                        { time: "18:00", icon: "🏨", title: "Royal View Check-in", desc: "美麗海水族館旁", cost: "已付清 (NT$5,207)", link: "https://royalview-churaumi.com/" },
+                        { time: "18:30", icon: "🍽️", title: "晚餐 (花咲市場)", desc: "搭乘接駁車前往 Hanasaki Marche 用餐 (飯店建議)", cost: "¥2000-5000", link: "https://hanasaki-marche.com/#l-shop" }
+                    ]
+                },
+                2: {
+                    title: "北部包車一日遊 (10H)",
+                    date: "03/11 (三)",
+                    events: [
+                        { time: "08:30", icon: "🚙", title: "包車出發", desc: "車內嚴禁飲食，時間控制嚴格", cost: "已付清 (NT$1,790)", link: null },
+                        { time: "09:15", icon: "🌊", title: "古宇利島 (海洋塔/心形岩)", desc: "海洋塔 (FunPass)、蝦蝦飯、しらさ食堂、Shinmei Coffee (停留 3hr)", cost: "¥1500 (飲食/伴手禮)", link: "https://kourijima.info/" },
+                        { time: "13:30", icon: "🐘", title: "萬座毛", desc: "Funpass入場，象鼻岩絕景 (停留 1.5hr)", cost: "¥0 (Funpass) + ¥300-1500", link: "https://www.manzamo.jp/" },
+                        { time: "15:50", icon: "🍺", title: "Orion 啤酒廠", desc: "16:00 場次 (務必準時)，駕駛不可飲酒", cost: "¥1000 (已付) + ¥500-3000", link: "https://www.orionbeer.co.jp/brewerytour/" },
+                        { time: "18:20", icon: "🐟", title: "晚餐：海邦丸本店", desc: "海人料理，可能需排隊", cost: "¥1000-2000", link: "https://kaihou-maru.com/" }
+                    ]
+                },
+                3: {
+                    title: "水族館・移動至那霸",
+                    date: "03/12 (四)",
+                    events: [
+                        { time: "09:40", icon: "🐋", title: "美麗海水族館 (FunPass)", desc: "黑潮之海、海豚劇場 (停留 5hr)，午餐館內解決", cost: "¥1000-2000 (餐飲)", link: "https://churaumi.okinawa/tc/" },
+                        { time: "15:15", icon: "🚌", title: "山原急行巴士", desc: "前往縣廳前站 (可刷信用卡/IC卡)", cost: "¥2000", link: "https://yanbaru-expressbus.com/" },
+                        { time: "18:30", icon: "🏨", title: "Hotel Naha City Check-in", desc: "靠近國際通", cost: "已付清 (NT$4,134)", link: "https://hotel-naha-city.jp/" },
+                        { time: "19:00", icon: "🥩", title: "晚餐：燒肉王/屋台村", desc: "燒肉王建議提前一個月預約", cost: "¥3180", link: "https://www.yakiniku-king.jp/" },
+                        { time: "21:00", icon: "🍸", title: "續攤：El Lequio", desc: "清吧小酌", cost: "¥2000-4500", link: "https://www.instagram.com/el_lequio_official/" }
+                    ]
+                },
+                4: {
+                    title: "美國村悠閒遊",
+                    date: "03/13 (五)",
+                    events: [
+                        { time: "08:00", icon: "🍣", title: "早餐：泊港魚市場", desc: "新鮮生魚片、生蠔", cost: "¥2500-3800", link: "http://www.tomariiyumachi.com/" },
+                        { time: "13:27", icon: "🚌", title: "前往美國村", desc: "搭乘 28 號公車", cost: "¥470", link: "https://www.okinawa-americanvillage.com/" },
+                        { time: "14:30", icon: "🍽️", title: "午餐：Calif Kitchen", desc: "海景加州風餐廳", cost: "¥1000-2000", link: "https://thecalifkitchen.okinawa/" },
+                        { time: "16:00", icon: "🎡", title: "美國村散策", desc: "Blue Seal 冰淇淋、日落海灘、Tacos", cost: "¥1500-2500", link: null },
+                        { time: "18:00", icon: "🌅", title: "Transit Cafe", desc: "欣賞日落", cost: "¥450-800", link: "https://transitcafe-okinawa.com/" },
+                        { time: "20:20", icon: "🚕", title: "計程車回那霸", desc: "約 45 分鐘 (每人分攤)", cost: "¥1400-1900", link: null },
+                        { time: "21:00", icon: "🥩", title: "晚餐：阿古豬涮涮鍋", desc: "CHABOO 或 Midnight Sweets", cost: "¥3000-4000", link: null }
+                    ]
+                },
+                5: {
+                    title: "南部觀光巴士一日遊",
+                    date: "03/14 (六)",
+                    events: [
+                        { time: "08:45", icon: "🚩", title: "集合：縣廳前", desc: "Blue Seal Palette 久茂地店前，準時出發", cost: "已付清 (NT$840)", link: null },
+                        { time: "09:30", icon: "🏯", title: "沖繩世界文化王國 (FunPass)", desc: "玉泉洞鐘乳石、毒蛇博物館 (飲料自費)", cost: "¥500-1500 (飲食/伴手禮)", link: "https://www.gyokusendo.co.jp/okinawaworld/" },
+                        { time: "13:40", icon: "🐠", title: "DMM 水族館 (FunPass) & iias", desc: "影像技術水族館，旁有商場", cost: "¥500-2000 (購物/飲食)", link: "https://kariyushi-aquarium.com/tc/" },
+                        { time: "16:00", icon: "✈️", title: "瀨長島 Umikaji Terrace", desc: "希臘風建築、看飛機、幸福鬆餅", cost: "¥1000-5000", link: "https://www.umikajiterrace.com/" },
+                        { time: "18:15", icon: "🔥", title: "晚餐：炉ばた焼 泉崎", desc: "體驗爐端燒", cost: "¥2000-3000", link: "https://tabelog.com/okinawa/A4701/A470101/47000350/" }
+                    ]
+                },
+                6: {
+                    title: "最後採買 & 回家",
+                    date: "03/15 (日)",
+                    events: [
+                        { time: "08:00", icon: "🍚", title: "早餐：風林火山", desc: "日式定食", cost: "¥500-2000", link: null },
+                        { time: "10:15", icon: "🛍️", title: "國際通衝刺", desc: "唐吉訶德、牧志市場、伴手禮", cost: "¥10,000+", link: "https://naha-kokusaidori.okinawa/tw/" },
+                        { time: "13:30", icon: "🚝", title: "前往那霸機場", desc: "午餐在機場解決 (豬肉飯糰/拉麵)", cost: "¥800-2300", link: "https://www.naha-airport.co.jp/zh-hant/" },
+                        { time: "16:55", icon: "🛫", title: "回程起飛", desc: "泰亞航空 Flight 231", cost: "已付清 (NT$5,044)", link: "https://www.airasia.com/zh/tw" },
+                        { time: "19:00", icon: "🏠", title: "平安抵達", desc: "桃園機場解散", cost: "無", link: null }
+                    ]
+                }
+            },
+            'ja-JP': {
+                1: {
+                    title: "沖縄到着・北部へ",
+                    date: "03/10 (火)",
+                    events: [
+                        { time: "04:30", icon: "🛂", title: "桃園空港チェックイン", desc: "T1 タイガーエア IT230 (06:35発)", link: "https://www.tigerairtw.com/jp", cost: "支払済 (NT$4,649)" },
+                        { time: "08:55", icon: "🛬", title: "那覇空港到着", desc: "入国、荷物預け、朝食 (A&W/ポークたまご)", cost: "¥400-1800", link: "https://www.naha-airport.co.jp/" },
+                        { time: "11:50", icon: "⛩️", title: "波上宮 & ビーチ", desc: "参拝、お守り購入、散策 (2時間)", cost: "¥1300-2300", link: "http://naminouegu.jp/" },
+                        { time: "14:40", icon: "🚌", title: "OASバス乗車", desc: "予約制、海洋博公園前へ移動", cost: "¥2400 (済)", link: "https://www.okinawa-shuttle.co.jp/" },
+                        { time: "18:00", icon: "🏨", title: "ロイヤルビュー チェックイン", desc: "美ら海水族館の隣", cost: "支払済 (NT$5,207)", link: "https://royalview-churaumi.com/" },
+                        { time: "18:30", icon: "🍽️", title: "夕食 (ハナサキマルシェ)", desc: "シャトルバスでハナサキマルシェへ (ホテル推奨)", cost: "¥2000-5000", link: "https://hanasaki-marche.com/#l-shop" }
+                    ]
+                },
+                2: {
+                    title: "北部貸切タクシー観光 (10H)",
+                    date: "03/11 (水)",
+                    events: [
+                        { time: "08:30", icon: "🚙", title: "出発", desc: "車内飲食厳禁、時間は厳守", cost: "支払済 (NT$1,790)", link: null },
+                        { time: "09:15", icon: "🌊", title: "古宇利島 (古宇利オーシャンタワー/ハートロック)", desc: "海洋塔 (FunPass)、ガーリックシュリンプ、しらさ食堂、Shinmei Coffee", cost: "¥1500 (飲食/土産)", link: "https://kourijima.info/" },
+                        { time: "13:30", icon: "🐘", title: "万座毛", desc: "Funpass入場、絶景スポット", cost: "¥0 (Funpass) + ¥300-1500", link: "https://www.manzamo.jp/" },
+                        { time: "15:50", icon: "🍺", title: "オリオンビール工場", desc: "16:00 回 (時間厳守)、運転手禁酒", cost: "¥1000 (済) + ¥500-3000", link: "https://www.orionbeer.co.jp/brewerytour/" },
+                        { time: "18:20", icon: "🐟", title: "夕食：海邦丸 本店", desc: "海人料理、行列の可能性あり", cost: "¥1000-2000", link: "https://kaihou-maru.com/" }
+                    ]
+                },
+                3: {
+                    title: "水族館・那覇へ移動",
+                    date: "03/12 (木)",
+                    events: [
+                        { time: "09:40", icon: "🐋", title: "美ら海水族館 (FunPass)", desc: "黒潮の海、イルカショー (5時間滞在)、ランチは館内", cost: "¥1000-2000 (食事)", link: "https://churaumi.okinawa/" },
+                        { time: "15:15", icon: "🚌", title: "やんばる急行バス", desc: "県庁前駅へ移動 (クレカ/ICカード可)", cost: "¥2000", link: "https://yanbaru-expressbus.com/" },
+                        { time: "18:30", icon: "🏨", title: "那覇シティ チェックイン", desc: "国際通り近く", cost: "支払済 (NT$4,134)", link: "https://hotel-naha-city.jp/" },
+                        { time: "19:00", icon: "🥩", title: "夕食：焼肉きんぐ/屋台村", desc: "焼肉きんぐは1ヶ月前予約推奨", cost: "¥3180", link: "https://www.yakiniku-king.jp/" },
+                        { time: "21:00", icon: "🍸", title: "二次会：El Lequio", desc: "カクテルバー", cost: "¥2000-4500", link: "https://www.instagram.com/el_lequio_official/" }
+                    ]
+                },
+                4: {
+                    title: "アメリカンビレッジ散策",
+                    date: "03/13 (金)",
+                    events: [
+                        { time: "08:00", icon: "🍣", title: "朝食：泊いゆまち", desc: "新鮮な刺身、生牡蠣", cost: "¥2500-3800", link: "http://www.tomariiyumachi.com/" },
+                        { time: "13:27", icon: "🚌", title: "アメリカンビレッジへ", desc: "28番バス乗車", cost: "¥470", link: "https://www.okinawa-americanvillage.com/" },
+                        { time: "14:30", icon: "🍽️", title: "昼食：Calif Kitchen", desc: "オーシャンビュー カリフォルニアスタイル", cost: "¥1000-2000", link: "https://thecalifkitchen.okinawa/" },
+                        { time: "16:00", icon: "🎡", title: "ビレッジ散策", desc: "ブルーシールアイス、サンセットビーチ", cost: "¥1500-2500", link: null },
+                        { time: "18:00", icon: "🌅", title: "Transit Cafe", desc: "サンセットディナー", cost: "¥450-800", link: "https://transitcafe-okinawa.com/" },
+                        { time: "20:20", icon: "🚕", title: "タクシーで那覇へ", desc: "約45分 (一人当たり)", cost: "¥1400-1900", link: null },
+                        { time: "21:00", icon: "🥩", title: "夕食：あぐー豚しゃぶしゃぶ", desc: "CHABOO または Midnight Sweets", cost: "¥3000-4000", link: null }
+                    ]
+                },
+                5: {
+                    title: "南部バスツアー",
+                    date: "03/14 (土)",
+                    events: [
+                        { time: "08:45", icon: "🚩", title: "集合：県庁前", desc: "パレット久茂地 ブルーシール前", cost: "支払済 (NT$840)", link: null },
+                        { time: "09:30", icon: "🏯", title: "おきなわワールド (FunPass)", desc: "玉泉洞、ハブ博物公園 (飲物自費)", cost: "¥500-1500 (飲食/土産)", link: "https://www.gyokusendo.co.jp/okinawaworld/" },
+                        { time: "13:40", icon: "🐠", title: "DMMかりゆし水族館 (FunPass) & iias", desc: "映像技術水族館、隣にショッピングモール", cost: "¥500-2000 (買物/飲食)", link: "https://kariyushi-aquarium.com/" },
+                        { time: "16:00", icon: "✈️", title: "ウミカジテラス", desc: "瀬長島、飛行機鑑賞、パンケーキ", cost: "¥1000-5000", link: "https://www.umikajiterrace.com/" },
+                        { time: "18:15", icon: "🔥", title: "夕食：炉端焼き 泉崎", desc: "ローカルな炉端焼き体験", cost: "¥2000-3000", link: "https://tabelog.com/okinawa/A4701/A470101/47000350/" }
+                    ]
+                },
+                6: {
+                    title: "最終日・買い物",
+                    date: "03/15 (日)",
+                    events: [
+                        { time: "08:00", icon: "🍚", title: "朝食：風林火山", desc: "和定食", cost: "¥500-2000", link: null },
+                        { time: "10:15", icon: "🛍️", title: "国際通り", desc: "ドン・キホーテ、牧志市場、お土産", cost: "¥10,000+", link: "https://naha-kokusaidori.okinawa/" },
+                        { time: "13:30", icon: "🚝", title: "那覇空港へ移動", desc: "昼食は空港で (ポークたまご/ラーメン)", cost: "¥800-2300", link: "https://www.naha-airport.co.jp/" },
+                        { time: "16:55", icon: "🛫", title: "復路出発", desc: "タイ・エアアジア Flight 231", cost: "支払済 (NT$5,044)", link: "https://www.airasia.com/jp/ja" },
+                        { time: "19:00", icon: "🏠", title: "台湾到着", desc: "桃園空港解散", cost: "なし", link: null }
+                    ]
+                }
+            }
+        };
+
+        const checklistKeys = [
+            'chk_passport', 'chk_vjw', 'chk_flight_tix', 'chk_hotel_tix',
+            'chk_bus_res', 'chk_car_res', 'chk_orion_res', 'chk_tour_res',
+            'chk_sim', 'chk_cash', 'chk_license'
+        ];
+
+        let currentDay = 1;
+
+        // --- Interaction Logic ---
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'zh-TW' ? 'ja-JP' : 'zh-TW';
+            
+            // Update Toggle Button Text
+            const btnText = currentLang === 'zh-TW' ? 'ZH' : 'JP';
+            document.getElementById('lang-label').innerText = btnText;
+
+            // Update DOM Elements with data-key
+            document.querySelectorAll('[data-key]').forEach(el => {
+                const key = el.getAttribute('data-key');
+                if (translations[currentLang][key]) {
+                    el.innerText = translations[currentLang][key];
+                }
+            });
+
+            // Re-render Dynamic Content
+            renderDay(currentDay);
+            renderChecklist();
+            updateChart();
+        }
+
+        // Toggle Mobile Menu
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            if (menu.classList.contains('open')) {
+                menu.classList.remove('open');
+                menu.classList.remove('border-t'); // Remove border when closing
+            } else {
+                menu.classList.add('open');
+                menu.classList.add('border-t'); // Add border when opening
+            }
+        }
+
+        function switchTab(tabId) {
+            // Hide all sections
+            document.querySelectorAll('main > div').forEach(el => {
+                el.classList.add('hidden');
+            });
+            // Show selected section
+            const target = document.getElementById(`section-${tabId}`);
+            if (target) {
+                target.classList.remove('hidden');
+                // Trigger chart resize if needed
+                if (tabId === 'budget' && window.budgetChartInstance) {
+                    window.budgetChartInstance.resize();
+                }
+            }
+
+            // Update nav buttons (Desktop)
+            const buttons = ['overview', 'itinerary', 'map', 'budget', 'souvenirs', 'prep', 'routes'];
+            buttons.forEach(btn => {
+                const el = document.getElementById(`tab-btn-${btn}`);
+                if (el) {
+                    if (btn === tabId) {
+                        el.className = 'active-tab px-2 lg:px-3 py-4 text-sm font-medium transition-colors whitespace-nowrap';
+                        el.classList.add('text-sky-600', 'border-sky-600');
+                    } else {
+                        el.className = 'inactive-tab px-2 lg:px-3 py-4 text-sm font-medium transition-colors whitespace-nowrap';
+                    }
+                }
+                
+                // Mobile Menu Active State
+                const mobileBtn = document.getElementById(`mobile-tab-btn-${btn}`);
+                if (mobileBtn) {
+                    if (btn === tabId) {
+                        mobileBtn.classList.remove('text-slate-600', 'hover:text-slate-800', 'hover:bg-slate-50');
+                        mobileBtn.classList.add('text-sky-600', 'bg-sky-50');
+                    } else {
+                        mobileBtn.classList.add('text-slate-600', 'hover:text-slate-800', 'hover:bg-slate-50');
+                        mobileBtn.classList.remove('text-sky-600', 'bg-sky-50');
+                    }
+                }
+            });
+
+            // Close mobile menu if open
+            const menu = document.getElementById('mobile-menu');
+            if (menu.classList.contains('open')) {
+                menu.classList.remove('open');
+                menu.classList.remove('border-t');
+            }
+        }
+
+        function renderDay(dayNum) {
+            currentDay = dayNum; // Track current day for lang switch
+            const container = document.getElementById('day-content-container');
+            const data = itineraryData[currentLang][dayNum];
+            
+            // Update buttons state
+            document.querySelectorAll('.day-selector').forEach(btn => {
+                btn.classList.remove('bg-sky-600', 'text-white', 'shadow-md');
+                btn.classList.add('bg-white', 'text-slate-600', 'border', 'border-slate-200');
+            });
+            const activeBtn = document.getElementById(`day-btn-${dayNum}`);
+            if(activeBtn) {
+                activeBtn.classList.remove('bg-white', 'text-slate-600', 'border-slate-200');
+                activeBtn.classList.add('bg-sky-600', 'text-white', 'shadow-md');
+            }
+
+            // Generate HTML
+            let html = `
+                <div class="flex items-end justify-between mb-8 border-b border-slate-100 pb-4">
+                    <div>
+                        <span class="text-sky-600 font-bold tracking-wide uppercase text-sm">Day ${dayNum} - ${data.date}</span>
+                        <h2 class="text-2xl font-bold text-slate-800 mt-1">${data.title}</h2>
+                    </div>
+                </div>
+                <div class="relative border-l-2 border-slate-200 ml-3 space-y-8">
+            `;
+
+            data.events.forEach(event => {
+                const linkHtml = event.link 
+                    ? `<a href="${event.link}" target="_blank" class="hover:text-sky-600 hover:underline decoration-sky-300 underline-offset-4 transition-colors">${event.title} ↗</a>` 
+                    : event.title;
+                
+                const costHtml = event.cost
+                    ? `<span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200 whitespace-nowrap flex-shrink-0">${event.cost}</span>`
+                    : '';
+
+                html += `
+                    <div class="relative pl-8">
+                        <div class="absolute -left-2.5 top-0 bg-white border-2 border-sky-500 rounded-full w-5 h-5"></div>
+                        <div class="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-4">
+                            <div class="min-w-[70px] font-mono font-bold text-slate-500 pt-0.5 sm:w-20 w-full mb-1 sm:mb-0">${event.time}</div>
+                            <div class="bg-slate-50 p-4 rounded-lg w-full hover:bg-sky-50 transition-colors border border-transparent hover:border-sky-100">
+                                <div class="flex justify-between items-start mb-1 gap-2 flex-wrap sm:flex-nowrap">
+                                    <div class="font-bold text-slate-800 text-lg flex items-center gap-2 flex-1 min-w-0 break-words">
+                                        <span class="flex-shrink-0">${event.icon}</span> <span class="break-words min-w-0">${linkHtml}</span>
+                                    </div>
+                                    ${costHtml}
+                                </div>
+                                <div class="text-slate-600 text-sm">${event.desc}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+
+        function renderChecklist() {
+            const list = document.getElementById('checklist-container');
+            let html = '';
+            checklistKeys.forEach((key, index) => {
+                const text = translations[currentLang][key];
+                // Check if already checked (simple persistence in DOM for this demo)
+                // In a real app, we'd check a state array. Here we'll just re-render unchecked for simplicity on lang switch
+                // to avoid complexity with tracking boolean states across languages without a robust state manager.
+                // Or better: Preserve state.
+                const isChecked = window.checklistState && window.checklistState[index];
+                const bgClass = isChecked ? 'bg-emerald-500 border-emerald-500' : 'border-slate-300';
+                const textClass = isChecked ? 'line-through text-slate-400' : 'text-slate-700';
+                const checkMark = isChecked ? '✓' : '✓'; // Always char, color hides it
+                const checkColor = isChecked ? 'text-white' : 'text-white'; // actually checkmark is white, bg handles visibility
+
+                html += `
+                    <li class="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors" onclick="toggleCheck(${index})">
+                        <div id="check-box-${index}" class="w-6 h-6 rounded border-2 ${bgClass} flex items-center justify-center text-white transition-colors">
+                            ${checkMark}
+                        </div>
+                        <span id="check-text-${index}" class="${textClass} select-none">${text}</span>
+                    </li>
+                `;
+            });
+            list.innerHTML = html;
+        }
+
+        // Simple state for checklist to persist across lang switch
+        window.checklistState = new Array(checklistKeys.length).fill(false);
+
+        function toggleCheck(index) {
+            window.checklistState[index] = !window.checklistState[index];
+            const box = document.getElementById(`check-box-${index}`);
+            const text = document.getElementById(`check-text-${index}`);
+            
+            if (window.checklistState[index]) {
+                // Checked
+                box.classList.remove('border-slate-300');
+                box.classList.add('bg-emerald-500', 'border-emerald-500');
+                text.classList.remove('text-slate-700');
+                text.classList.add('line-through', 'text-slate-400');
+            } else {
+                // Unchecked
+                box.classList.remove('bg-emerald-500', 'border-emerald-500');
+                box.classList.add('border-slate-300');
+                text.classList.remove('line-through', 'text-slate-400');
+                text.classList.add('text-slate-700');
+            }
+        }
+
+        // --- Init Chart ---
+        function initChart() {
+            const ctx = document.getElementById('budgetChart').getContext('2d');
+            window.budgetChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: getChartLabels(),
+                    datasets: [{
+                        data: [9693, 9494, 4030, 3494, 12900], // Updated with correct totals
+                        backgroundColor: [
+                            '#0ea5e9', // Flight
+                            '#6366f1', // Stay
+                            '#10b981', // Transport
+                            '#f59e0b', // Ticket/Misc
+                            '#f43f5e'  // Food
+                        ],
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true,
+                                font: {
+                                    family: 'sans-serif',
+                                    size: 12
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return ` $${context.raw.toLocaleString()} TWD`;
+                                }
+                            }
+                        }
+                    },
+                    cutout: '65%'
+                }
+            });
+        }
+
+        function getChartLabels() {
+            const t = translations[currentLang];
+            return [t.chart_flight, t.chart_stay, t.chart_transport, t.chart_ticket, t.chart_food];
+        }
+
+        function updateChart() {
+            if (window.budgetChartInstance) {
+                // Recalculate Totals
+                // Flights: 9693
+                // Stay: 9494
+                // Transport: 1790 (Paid) + 840 (Paid) + 500 (OAS) + 900 (Local) = 4030
+                // Ticket/Misc: 1450 (FunPass) + 210 (Orion) + 330 (SIM) + 1000 (Ins) = 2990
+                // Food: 12900
+                
+                const data = [9693, 9494, 4030, 2990, 12900];
+                
+                window.budgetChartInstance.data.labels = getChartLabels();
+                window.budgetChartInstance.data.datasets[0].data = data;
+                window.budgetChartInstance.data.datasets[0].backgroundColor = [
+                     '#0ea5e9', // Flight
+                     '#6366f1', // Stay
+                     '#10b981', // Transport
+                     '#f59e0b', // Ticket
+                     '#f43f5e'  // Food
+                ];
+                window.budgetChartInstance.update();
+            }
+        }
+
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            renderDay(1);
+            renderChecklist();
+            initChart();
+            switchTab('overview'); // Start at overview
+            // Trigger initial chart update with correct values
+            updateChart();
+        });
+
+    </script>
+</body>
 </html>
