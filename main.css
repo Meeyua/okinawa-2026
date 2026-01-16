@@ -1,89 +1,113 @@
-/* Chart Container Strict Styling */
-.chart-container {
-    position: relative;
-    width: 100%;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
-    height: 300px;
-    max-height: 400px;
-}
-@media (min-width: 768px) {
-    .chart-container {
-        height: 350px;
-    }
-}
+        /* Chart Container Strict Styling */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
 
-/* Custom Scrollbar for aesthetic */
-::-webkit-scrollbar {
-    width: 8px;
-}
-::-webkit-scrollbar-track {
-    background: #f1f1f1;
-}
-::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
-}
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
 
-/* Transition utilities */
-.fade-in {
-    animation: fadeIn 0.3s ease-in-out;
-}
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
+        /* Custom Scrollbar for aesthetic */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
 
-.active-tab {
-    border-bottom: 3px solid #0ea5e9;
-    color: #0ea5e9;
-    font-weight: 600;
-}
-.inactive-tab {
-    border-bottom: 3px solid transparent;
-    color: #64748b;
-}
-.inactive-tab:hover {
-    color: #334155;
-}
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
 
-/* Mobile Menu Transitions */
-#mobile-menu {
-    transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
-    max-height: 0;
-    opacity: 0;
-    overflow: hidden;
-}
-#mobile-menu.open {
-    max-height: 400px; /* Approximate max height */
-    opacity: 1;
-}
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
 
-/* Map Container */
-.map-wrapper {
-    position: relative;
-    padding-bottom: 75%; /* 4:3 Aspect Ratio for mobile */
-    height: 0;
-    overflow: hidden;
-    border-radius: 1rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-}
-@media (min-width: 768px) {
-    .map-wrapper {
-        padding-bottom: 56.25%; /* 16:9 for tablet/desktop */
-        height: 600px; /* Fixed height for large screens */
-        padding-bottom: 0; 
-    }
-}
-.map-wrapper iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border: 0;
-}
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Transition utilities */
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .active-tab {
+            border-bottom: 3px solid #0ea5e9;
+            color: #0ea5e9;
+            font-weight: 600;
+        }
+
+        .inactive-tab {
+            border-bottom: 3px solid transparent;
+            color: #64748b;
+        }
+
+        .inactive-tab:hover {
+            color: #334155;
+        }
+
+        /* Mobile Menu Transitions */
+        #mobile-menu {
+            transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out, visibility 0.3s;
+            max-height: 0;
+            opacity: 0;
+            visibility: hidden;
+            overflow: hidden;
+            /* Remove border-t here to prevent line when closed, added via class toggle or logic */
+        }
+
+        #mobile-menu.open {
+            max-height: 400px;
+            /* Approximate max height */
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Map Container */
+        .map-wrapper {
+            position: relative;
+            padding-bottom: 75%;
+            /* 4:3 Aspect Ratio for mobile */
+            height: 0;
+            overflow: hidden;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        @media (min-width: 768px) {
+            .map-wrapper {
+                padding-bottom: 56.25%;
+                /* 16:9 for tablet/desktop */
+                height: 600px;
+                /* Fixed height for large screens */
+                padding-bottom: 0;
+            }
+        }
+
+        .map-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,43 +10,59 @@
     <script src="main.js"></script>
     <link rel="main.css">
 </head>
+
 <body class="bg-slate-50 text-slate-800 font-sans leading-relaxed selection:bg-sky-100 selection:text-sky-700">
 
     <!-- Navigation Bar -->
     <nav class="sticky top-0 z-50 bg-white/95 backdrop-blur-md shadow-sm border-b border-slate-200">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
-                
+
                 <!-- Left: Brand & Title -->
-                <div class="flex-shrink-0 flex items-center gap-2 cursor-pointer select-none" onclick="switchTab('overview')">
+                <div class="flex-shrink-0 flex items-center gap-2 cursor-pointer select-none"
+                    onclick="switchTab('overview')">
                     <span class="text-2xl">🌺</span>
-                    <span class="font-bold text-lg sm:text-xl tracking-tight text-slate-700" id="nav-title">沖繩 2026</span>
+                    <span class="font-bold text-lg sm:text-xl tracking-tight text-slate-700" id="nav-title">沖繩
+                        2026</span>
                 </div>
-                
+
                 <!-- Center: Desktop Tabs (Hidden on Mobile) -->
                 <div class="hidden md:flex flex-1 justify-center mx-2">
                     <div class="flex space-x-6">
-                        <button onclick="switchTab('overview')" id="tab-btn-overview" class="active-tab px-3 py-4 text-sm font-medium transition-colors whitespace-nowrap" data-key="tab_overview">總覽</button>
-                        <button onclick="switchTab('itinerary')" id="tab-btn-itinerary" class="inactive-tab px-3 py-4 text-sm font-medium transition-colors whitespace-nowrap" data-key="tab_itinerary">每日行程</button>
-                        <button onclick="switchTab('map')" id="tab-btn-map" class="inactive-tab px-3 py-4 text-sm font-medium transition-colors whitespace-nowrap" data-key="tab_map">地圖</button>
-                        <button onclick="switchTab('budget')" id="tab-btn-budget" class="inactive-tab px-3 py-4 text-sm font-medium transition-colors whitespace-nowrap" data-key="tab_budget">預算</button>
-                        <button onclick="switchTab('prep')" id="tab-btn-prep" class="inactive-tab px-3 py-4 text-sm font-medium transition-colors whitespace-nowrap" data-key="tab_prep">準備</button>
+                        <button onclick="switchTab('overview')" id="tab-btn-overview"
+                            class="active-tab px-3 py-4 text-sm font-medium transition-colors whitespace-nowrap"
+                            data-key="tab_overview">總覽</button>
+                        <button onclick="switchTab('itinerary')" id="tab-btn-itinerary"
+                            class="inactive-tab px-3 py-4 text-sm font-medium transition-colors whitespace-nowrap"
+                            data-key="tab_itinerary">每日行程</button>
+                        <button onclick="switchTab('map')" id="tab-btn-map"
+                            class="inactive-tab px-3 py-4 text-sm font-medium transition-colors whitespace-nowrap"
+                            data-key="tab_map">地圖</button>
+                        <button onclick="switchTab('budget')" id="tab-btn-budget"
+                            class="inactive-tab px-3 py-4 text-sm font-medium transition-colors whitespace-nowrap"
+                            data-key="tab_budget">預算</button>
+                        <button onclick="switchTab('prep')" id="tab-btn-prep"
+                            class="inactive-tab px-3 py-4 text-sm font-medium transition-colors whitespace-nowrap"
+                            data-key="tab_prep">準備</button>
                     </div>
                 </div>
 
                 <!-- Right: Language & Hamburger -->
                 <div class="flex items-center gap-3">
                     <!-- Language Switcher -->
-                    <button onclick="toggleLanguage()" class="flex items-center gap-1 bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1.5 rounded-full text-xs font-bold transition-colors border border-slate-200 select-none">
+                    <button onclick="toggleLanguage()"
+                        class="flex items-center gap-1 bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1.5 rounded-full text-xs font-bold transition-colors border border-slate-200 select-none">
                         <span class="text-base">🌐</span>
                         <span id="lang-label">ZH</span>
                     </button>
 
                     <!-- Mobile Menu Button (Visible on Mobile Only) -->
-                    <button id="mobile-menu-btn" onclick="toggleMobileMenu()" class="md:hidden p-2 rounded-md text-slate-500 hover:text-slate-700 hover:bg-slate-100 focus:outline-none transition-colors">
+                    <button id="mobile-menu-btn" onclick="toggleMobileMenu()"
+                        class="md:hidden p-2 rounded-md text-slate-500 hover:text-slate-700 hover:bg-slate-100 focus:outline-none transition-colors">
                         <!-- Hamburger Icon -->
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
                     </button>
                 </div>
@@ -53,13 +70,24 @@
         </div>
 
         <!-- Mobile Menu Dropdown -->
-        <div id="mobile-menu" class="md:hidden bg-white border-t border-slate-100">
+        <!-- Added 'border-t' in JS toggle to fix collapse border issue -->
+        <div id="mobile-menu" class="md:hidden bg-white border-slate-100">
             <div class="px-2 pt-2 pb-3 space-y-1 shadow-lg">
-                <button onclick="switchTab('overview')" id="mobile-tab-btn-overview" class="block w-full text-left px-3 py-3 rounded-md text-base font-medium text-sky-600 bg-sky-50" data-key="tab_overview">總覽</button>
-                <button onclick="switchTab('itinerary')" id="mobile-tab-btn-itinerary" class="block w-full text-left px-3 py-3 rounded-md text-base font-medium text-slate-600 hover:text-slate-800 hover:bg-slate-50" data-key="tab_itinerary">每日行程</button>
-                <button onclick="switchTab('map')" id="mobile-tab-btn-map" class="block w-full text-left px-3 py-3 rounded-md text-base font-medium text-slate-600 hover:text-slate-800 hover:bg-slate-50" data-key="tab_map">地圖</button>
-                <button onclick="switchTab('budget')" id="mobile-tab-btn-budget" class="block w-full text-left px-3 py-3 rounded-md text-base font-medium text-slate-600 hover:text-slate-800 hover:bg-slate-50" data-key="tab_budget">預算</button>
-                <button onclick="switchTab('prep')" id="mobile-tab-btn-prep" class="block w-full text-left px-3 py-3 rounded-md text-base font-medium text-slate-600 hover:text-slate-800 hover:bg-slate-50" data-key="tab_prep">準備</button>
+                <button onclick="switchTab('overview')" id="mobile-tab-btn-overview"
+                    class="block w-full text-left px-3 py-3 rounded-md text-base font-medium text-sky-600 bg-sky-50"
+                    data-key="tab_overview">總覽</button>
+                <button onclick="switchTab('itinerary')" id="mobile-tab-btn-itinerary"
+                    class="block w-full text-left px-3 py-3 rounded-md text-base font-medium text-slate-600 hover:text-slate-800 hover:bg-slate-50"
+                    data-key="tab_itinerary">每日行程</button>
+                <button onclick="switchTab('map')" id="mobile-tab-btn-map"
+                    class="block w-full text-left px-3 py-3 rounded-md text-base font-medium text-slate-600 hover:text-slate-800 hover:bg-slate-50"
+                    data-key="tab_map">地圖</button>
+                <button onclick="switchTab('budget')" id="mobile-tab-btn-budget"
+                    class="block w-full text-left px-3 py-3 rounded-md text-base font-medium text-slate-600 hover:text-slate-800 hover:bg-slate-50"
+                    data-key="tab_budget">預算</button>
+                <button onclick="switchTab('prep')" id="mobile-tab-btn-prep"
+                    class="block w-full text-left px-3 py-3 rounded-md text-base font-medium text-slate-600 hover:text-slate-800 hover:bg-slate-50"
+                    data-key="tab_prep">準備</button>
             </div>
         </div>
     </nav>
@@ -78,22 +106,26 @@
 
             <!-- Key Stats -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center">
+                <div
+                    class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center">
                     <div class="text-3xl mb-1">📅</div>
                     <div class="text-sm text-slate-500 font-medium" data-key="stat_date">日期</div>
                     <div class="font-bold text-slate-800">2026/03/10 - 15</div>
                 </div>
-                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center">
+                <div
+                    class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center">
                     <div class="text-3xl mb-1">🌡️</div>
                     <div class="text-sm text-slate-500 font-medium" data-key="stat_weather">氣溫</div>
                     <div class="font-bold text-slate-800">18°C ~ 23°C</div>
                 </div>
-                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center">
+                <div
+                    class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center">
                     <div class="text-3xl mb-1">💴</div>
                     <div class="text-sm text-slate-500 font-medium" data-key="stat_rate">匯率預估</div>
                     <div class="font-bold text-slate-800">0.21</div>
                 </div>
-                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center">
+                <div
+                    class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center">
                     <div class="text-3xl mb-1">👥</div>
                     <div class="text-sm text-slate-500 font-medium" data-key="stat_mode">模式</div>
                     <div class="font-bold text-slate-800" data-key="stat_mode_val">自由行</div>
@@ -101,13 +133,16 @@
             </div>
 
             <!-- Flights -->
-            <h2 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2" data-key="flight_title">🛫 航班資訊</h2>
+            <h2 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2" data-key="flight_title">🛫 航班資訊
+            </h2>
             <div class="grid md:grid-cols-2 gap-6 mb-8">
                 <!-- Outbound -->
                 <div class="bg-white rounded-2xl shadow-sm border border-sky-100 overflow-hidden relative">
                     <div class="bg-sky-50 px-6 py-3 border-b border-sky-100 flex justify-between items-center">
                         <span class="font-bold text-sky-700" data-key="flight_out_date">去程 | 03/10 (二)</span>
-                        <a href="https://www.tigerairtw.com/zh-tw" target="_blank" class="text-xs bg-sky-200 text-sky-800 px-2 py-1 rounded-full hover:bg-sky-300 transition flex items-center gap-1" data-key="flight_out_code">台灣虎航 IT230 ↗</a>
+                        <a href="https://www.tigerairtw.com/zh-tw" target="_blank"
+                            class="text-xs bg-sky-200 text-sky-800 px-2 py-1 rounded-full hover:bg-sky-300 transition flex items-center gap-1"
+                            data-key="flight_out_code">台灣虎航 IT230 ↗</a>
                     </div>
                     <div class="p-6">
                         <div class="flex justify-between items-center mb-4">
@@ -126,7 +161,8 @@
                                 <div class="text-sm text-slate-500" data-key="flight_oka">那霸 OKA</div>
                             </div>
                         </div>
-                        <div class="text-sm bg-orange-50 text-orange-800 p-3 rounded-lg border border-orange-100" data-key="flight_out_note">
+                        <div class="text-sm bg-orange-50 text-orange-800 p-3 rounded-lg border border-orange-100"
+                            data-key="flight_out_note">
                             ⚠️ 04:30 請務必完成櫃台報到
                         </div>
                     </div>
@@ -136,7 +172,9 @@
                 <div class="bg-white rounded-2xl shadow-sm border border-sky-100 overflow-hidden relative">
                     <div class="bg-sky-50 px-6 py-3 border-b border-sky-100 flex justify-between items-center">
                         <span class="font-bold text-sky-700" data-key="flight_in_date">回程 | 03/15 (日)</span>
-                        <a href="https://www.airasia.com/zh/tw" target="_blank" class="text-xs bg-sky-200 text-sky-800 px-2 py-1 rounded-full hover:bg-sky-300 transition flex items-center gap-1" data-key="flight_in_code">泰亞航空 FD/SL231 ↗</a>
+                        <a href="https://www.airasia.com/zh/tw" target="_blank"
+                            class="text-xs bg-sky-200 text-sky-800 px-2 py-1 rounded-full hover:bg-sky-300 transition flex items-center gap-1"
+                            data-key="flight_in_code">泰亞航空 FD/SL231 ↗</a>
                     </div>
                     <div class="p-6">
                         <div class="flex justify-between items-center mb-4">
@@ -155,7 +193,8 @@
                                 <div class="text-sm text-slate-500" data-key="flight_tpe">桃機 TPE</div>
                             </div>
                         </div>
-                        <div class="text-sm bg-blue-50 text-blue-800 p-3 rounded-lg border border-blue-100" data-key="flight_in_note">
+                        <div class="text-sm bg-blue-50 text-blue-800 p-3 rounded-lg border border-blue-100"
+                            data-key="flight_in_note">
                             ℹ️ 請於 14:00 前抵達那霸機場
                         </div>
                     </div>
@@ -163,15 +202,21 @@
             </div>
 
             <!-- Accommodation -->
-            <h2 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2" data-key="hotel_title">🏨 住宿安排</h2>
+            <h2 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2" data-key="hotel_title">🏨 住宿安排
+            </h2>
             <div class="space-y-4">
                 <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 flex flex-col md:flex-row gap-4">
-                    <div class="flex-shrink-0 bg-indigo-50 w-full md:w-20 h-20 rounded-lg flex items-center justify-center text-3xl">🌊</div>
+                    <div
+                        class="flex-shrink-0 bg-indigo-50 w-full md:w-20 h-20 rounded-lg flex items-center justify-center text-3xl">
+                        🌊</div>
                     <div>
                         <div class="flex items-center gap-2 mb-1">
-                            <span class="text-xs font-bold bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded">Day 1-2</span>
+                            <span class="text-xs font-bold bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded">Day
+                                1-2</span>
                             <h3 class="font-bold text-lg text-slate-800">
-                                <a href="https://royalview-churaumi.com/" target="_blank" class="hover:text-sky-600 flex items-center gap-1 transition-colors" data-key="hotel_1_name">Royal View Hotel Churaumi ↗</a>
+                                <a href="https://royalview-churaumi.com/" target="_blank"
+                                    class="hover:text-sky-600 flex items-center gap-1 transition-colors"
+                                    data-key="hotel_1_name">Royal View Hotel Churaumi ↗</a>
                             </h3>
                         </div>
                         <p class="text-sm text-slate-600 mb-2">📍 938 Ishikawa, Motobu</p>
@@ -180,12 +225,16 @@
                 </div>
 
                 <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 flex flex-col md:flex-row gap-4">
-                    <div class="flex-shrink-0 bg-rose-50 w-full md:w-20 h-20 rounded-lg flex items-center justify-center text-3xl">🛍️</div>
+                    <div
+                        class="flex-shrink-0 bg-rose-50 w-full md:w-20 h-20 rounded-lg flex items-center justify-center text-3xl">
+                        🛍️</div>
                     <div>
                         <div class="flex items-center gap-2 mb-1">
                             <span class="text-xs font-bold bg-rose-100 text-rose-700 px-2 py-0.5 rounded">Day 3-5</span>
                             <h3 class="font-bold text-lg text-slate-800">
-                                <a href="https://hotel-naha-city.jp/" target="_blank" class="hover:text-sky-600 flex items-center gap-1 transition-colors" data-key="hotel_2_name">Hotel Naha City - Kokusai Street ↗</a>
+                                <a href="https://hotel-naha-city.jp/" target="_blank"
+                                    class="hover:text-sky-600 flex items-center gap-1 transition-colors"
+                                    data-key="hotel_2_name">Hotel Naha City - Kokusai Street ↗</a>
                             </h3>
                         </div>
                         <p class="text-sm text-slate-600 mb-2">📍 1 Chome-29-7 Matsuyama, Naha</p>
@@ -204,14 +253,38 @@
                 </p>
             </div>
 
-            <!-- Day Selector -->
+            <!-- Day Selector (Improved UX) -->
             <div class="flex space-x-2 overflow-x-auto pb-4 mb-4 no-scrollbar">
-                <button onclick="renderDay(1)" id="day-btn-1" class="day-selector active bg-sky-600 text-white shadow-md px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap">Day 1 (3/10)</button>
-                <button onclick="renderDay(2)" id="day-btn-2" class="day-selector bg-white text-slate-600 border border-slate-200 px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap hover:bg-slate-50">Day 2 (3/11)</button>
-                <button onclick="renderDay(3)" id="day-btn-3" class="day-selector bg-white text-slate-600 border border-slate-200 px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap hover:bg-slate-50">Day 3 (3/12)</button>
-                <button onclick="renderDay(4)" id="day-btn-4" class="day-selector bg-white text-slate-600 border border-slate-200 px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap hover:bg-slate-50">Day 4 (3/13)</button>
-                <button onclick="renderDay(5)" id="day-btn-5" class="day-selector bg-white text-slate-600 border border-slate-200 px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap hover:bg-slate-50">Day 5 (3/14)</button>
-                <button onclick="renderDay(6)" id="day-btn-6" class="day-selector bg-white text-slate-600 border border-slate-200 px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap hover:bg-slate-50">Day 6 (3/15)</button>
+                <button onclick="renderDay(1)" id="day-btn-1"
+                    class="day-selector active bg-sky-600 text-white shadow-md px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap min-w-[80px] flex flex-col items-center justify-center border border-transparent">
+                    <span class="text-[10px] opacity-90 font-normal">3/10</span>
+                    <span>Day 1</span>
+                </button>
+                <button onclick="renderDay(2)" id="day-btn-2"
+                    class="day-selector bg-white text-slate-600 border border-slate-200 px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap hover:bg-slate-50 min-w-[80px] flex flex-col items-center justify-center">
+                    <span class="text-[10px] text-slate-400 font-normal">3/11</span>
+                    <span>Day 2</span>
+                </button>
+                <button onclick="renderDay(3)" id="day-btn-3"
+                    class="day-selector bg-white text-slate-600 border border-slate-200 px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap hover:bg-slate-50 min-w-[80px] flex flex-col items-center justify-center">
+                    <span class="text-[10px] text-slate-400 font-normal">3/12</span>
+                    <span>Day 3</span>
+                </button>
+                <button onclick="renderDay(4)" id="day-btn-4"
+                    class="day-selector bg-white text-slate-600 border border-slate-200 px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap hover:bg-slate-50 min-w-[80px] flex flex-col items-center justify-center">
+                    <span class="text-[10px] text-slate-400 font-normal">3/13</span>
+                    <span>Day 4</span>
+                </button>
+                <button onclick="renderDay(5)" id="day-btn-5"
+                    class="day-selector bg-white text-slate-600 border border-slate-200 px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap hover:bg-slate-50 min-w-[80px] flex flex-col items-center justify-center">
+                    <span class="text-[10px] text-slate-400 font-normal">3/14</span>
+                    <span>Day 5</span>
+                </button>
+                <button onclick="renderDay(6)" id="day-btn-6"
+                    class="day-selector bg-white text-slate-600 border border-slate-200 px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap hover:bg-slate-50 min-w-[80px] flex flex-col items-center justify-center">
+                    <span class="text-[10px] text-slate-400 font-normal">3/15</span>
+                    <span>Day 6</span>
+                </button>
             </div>
 
             <!-- Dynamic Day Content Container -->
@@ -228,13 +301,16 @@
                     所有景點與路線皆已整合在 Google My Maps 中。
                 </p>
             </div>
-            
+
             <div class="map-wrapper bg-slate-100">
-                <iframe src="https://www.google.com/maps/d/embed?mid=1MtgP2ghQ3aqyh1ip3Cb_ez3Eizm232o&ehbc=2E312F" width="100%" height="480"></iframe>
+                <iframe src="https://www.google.com/maps/d/embed?mid=1MtgP2ghQ3aqyh1ip3Cb_ez3Eizm232o&ehbc=2E312F"
+                    width="100%" height="480"></iframe>
             </div>
-            
+
             <div class="mt-4 flex gap-2 justify-center">
-                <a href="https://www.google.com/maps/d/edit?mid=1MtgP2ghQ3aqyh1ip3Cb_ez3Eizm232o&usp=sharing" target="_blank" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-sky-700 bg-sky-100 hover:bg-sky-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500">
+                <a href="https://www.google.com/maps/d/edit?mid=1MtgP2ghQ3aqyh1ip3Cb_ez3Eizm232o&usp=sharing"
+                    target="_blank"
+                    class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-sky-700 bg-sky-100 hover:bg-sky-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500">
                     <span class="mr-2">🗺️</span> <span data-key="open_map_btn">在 Google Maps App 開啟</span>
                 </a>
             </div>
@@ -252,7 +328,8 @@
             <div class="grid lg:grid-cols-2 gap-8 items-start">
                 <!-- Chart Section -->
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                    <h3 class="text-lg font-bold text-slate-700 mb-4 text-center" data-key="budget_chart_title">費用分佈比例 (TWD)</h3>
+                    <h3 class="text-lg font-bold text-slate-700 mb-4 text-center" data-key="budget_chart_title">費用分佈比例
+                        (TWD)</h3>
                     <div class="chart-container">
                         <canvas id="budgetChart"></canvas>
                     </div>
@@ -261,17 +338,22 @@
 
                 <!-- Breakdown Details -->
                 <div class="space-y-4">
-                    
+
                     <!-- 1. PAID Section -->
                     <div class="bg-emerald-50 p-5 rounded-xl shadow-sm border border-emerald-100">
-                        <h3 class="font-bold text-emerald-800 mb-3 border-b border-emerald-200 pb-2 flex items-center gap-2">
+                        <h3
+                            class="font-bold text-emerald-800 mb-3 border-b border-emerald-200 pb-2 flex items-center gap-2">
                             <span>✅</span> <span data-key="budget_paid_title">已付清費用 (Paid)</span>
                         </h3>
                         <ul class="space-y-2 text-sm text-emerald-900">
-                            <li class="flex justify-between"><span>✈️ 機票 (去+回)</span><span class="font-mono font-medium">$9,693</span></li>
-                            <li class="flex justify-between"><span>🏨 住宿 (全行程)</span><span class="font-mono font-medium">$9,494</span></li>
-                            <li class="flex justify-between"><span>🚙 包車 (Day 2)</span><span class="font-mono font-medium">$1,790</span></li>
-                            <li class="flex justify-between"><span>🚌 南部觀光巴士</span><span class="font-mono font-medium">$840</span></li>
+                            <li class="flex justify-between"><span>✈️ 機票 (去+回)</span><span
+                                    class="font-mono font-medium">$9,693</span></li>
+                            <li class="flex justify-between"><span>🏨 住宿 (全行程)</span><span
+                                    class="font-mono font-medium">$9,494</span></li>
+                            <li class="flex justify-between"><span>🚙 包車 (Day 2)</span><span
+                                    class="font-mono font-medium">$1,790</span></li>
+                            <li class="flex justify-between"><span>🚌 南部觀光巴士</span><span
+                                    class="font-mono font-medium">$840</span></li>
                             <li class="flex justify-between border-t border-emerald-200 pt-2 font-bold">
                                 <span>小計 (Subtotal)</span><span>$21,817</span>
                             </li>
@@ -284,11 +366,16 @@
                             <span>💳</span> <span data-key="budget_topay_title">出發前預付 (To Pay)</span>
                         </h3>
                         <ul class="space-y-2 text-sm text-sky-900">
-                            <li class="flex justify-between"><span>🚌 OAS 機場巴士</span><span class="font-mono font-medium">~$504</span></li>
-                            <li class="flex justify-between"><span>🍺 Orion 門票</span><span class="font-mono font-medium">~$210</span></li>
-                            <li class="flex justify-between"><span>🎟️ 沖繩 Fun Pass</span><span class="font-mono font-medium">~$1,450</span></li>
-                            <li class="flex justify-between"><span>📱 SIM 卡</span><span class="font-mono font-medium">~$330</span></li>
-                            <li class="flex justify-between"><span>🛡️ 旅遊保險 (預估)</span><span class="font-mono font-medium">~$1,000</span></li>
+                            <li class="flex justify-between"><span>🚌 OAS 機場巴士</span><span
+                                    class="font-mono font-medium">~$504</span></li>
+                            <li class="flex justify-between"><span>🍺 Orion 門票</span><span
+                                    class="font-mono font-medium">~$210</span></li>
+                            <li class="flex justify-between"><span>🎟️ 沖繩 Fun Pass</span><span
+                                    class="font-mono font-medium">~$1,450</span></li>
+                            <li class="flex justify-between"><span>📱 SIM 卡</span><span
+                                    class="font-mono font-medium">~$330</span></li>
+                            <li class="flex justify-between"><span>🛡️ 旅遊保險 (預估)</span><span
+                                    class="font-mono font-medium">~$1,000</span></li>
                             <li class="flex justify-between border-t border-sky-200 pt-2 font-bold">
                                 <span>小計 (Subtotal)</span><span>~$3,494</span>
                             </li>
@@ -297,24 +384,27 @@
 
                     <!-- 3. LOCAL Section -->
                     <div class="bg-amber-50 p-5 rounded-xl shadow-sm border border-amber-100">
-                        <h3 class="font-bold text-amber-800 mb-3 border-b border-amber-200 pb-2 flex items-center gap-2">
+                        <h3
+                            class="font-bold text-amber-800 mb-3 border-b border-amber-200 pb-2 flex items-center gap-2">
                             <span>💴</span> <span data-key="budget_local_title">當地開銷 (Local Cash/Card)</span>
                         </h3>
                         <ul class="space-y-2 text-sm text-amber-900">
-                            <li class="flex justify-between"><span>🚕 當地交通 (單軌/計程車)</span><span class="font-mono font-medium">~$900</span></li>
-                            <li class="flex justify-between"><span>🍱 餐飲/雜支</span><span class="font-mono font-medium">~$12,900</span></li>
+                            <li class="flex justify-between"><span>🚕 當地交通 (單軌/計程車)</span><span
+                                    class="font-mono font-medium">~$900</span></li>
+                            <li class="flex justify-between"><span>🍱 餐飲/雜支</span><span
+                                    class="font-mono font-medium">~$12,900</span></li>
                             <li class="flex justify-between text-xs text-amber-700 pl-4 border-l-2 border-amber-200">
                                 <span>🏥 VJW 額外保險 (落地視需求加保)</span>
                             </li>
                             <li class="flex justify-between border-t border-amber-200 pt-2 font-bold">
                                 <span>小計 (Subtotal)</span><span>~$13,800</span>
                             </li>
-                             <li class="text-xs text-amber-700/80 text-right mt-1">
+                            <li class="text-xs text-amber-700/80 text-right mt-1">
                                 (約 65,000 ~ 70,000 JPY)
                             </li>
                         </ul>
                     </div>
-                    
+
                     <div class="text-right text-xs text-slate-400 font-medium mt-2">
                         Total Estimate: ~$39,111 TWD
                     </div>
@@ -345,41 +435,56 @@
                 <div class="space-y-6">
                     <!-- Apps & Links -->
                     <div class="bg-indigo-50 p-6 rounded-2xl border border-indigo-100">
-                        <h3 class="text-lg font-bold text-indigo-800 mb-3" data-key="app_link_title">📱 推薦 App & 預約連結</h3>
+                        <h3 class="text-lg font-bold text-indigo-800 mb-3" data-key="app_link_title">📱 推薦 App & 預約連結
+                        </h3>
                         <ul class="space-y-3 text-sm text-indigo-900">
                             <li>
-                                <a href="https://vjw-lp.digital.go.jp/zh-hant/" target="_blank" class="flex items-start gap-2 hover:bg-indigo-100 p-2 rounded-lg transition-colors group">
+                                <a href="https://vjw-lp.digital.go.jp/zh-hant/" target="_blank"
+                                    class="flex items-start gap-2 hover:bg-indigo-100 p-2 rounded-lg transition-colors group">
                                     <span class="text-lg">🌐</span>
                                     <div>
-                                        <b class="group-hover:text-indigo-700 underline decoration-indigo-300 underline-offset-2">Visit Japan Web</b>
-                                        <p class="text-indigo-700/80 text-xs mt-0.5" data-key="link_vjw_desc">入境審查與海關申報 QR Code</p>
+                                        <b
+                                            class="group-hover:text-indigo-700 underline decoration-indigo-300 underline-offset-2">Visit
+                                            Japan Web</b>
+                                        <p class="text-indigo-700/80 text-xs mt-0.5" data-key="link_vjw_desc">入境審查與海關申報
+                                            QR Code</p>
                                     </div>
                                 </a>
                             </li>
                             <li>
-                                <a href="https://www.orionbeer.co.jp/brewerytour/" target="_blank" class="flex items-start gap-2 hover:bg-indigo-100 p-2 rounded-lg transition-colors group">
+                                <a href="https://www.orionbeer.co.jp/brewerytour/" target="_blank"
+                                    class="flex items-start gap-2 hover:bg-indigo-100 p-2 rounded-lg transition-colors group">
                                     <span class="text-lg">🍺</span>
                                     <div>
-                                        <b class="group-hover:text-indigo-700 underline decoration-indigo-300 underline-offset-2" data-key="link_orion_title">Orion 啤酒廠預約</b>
-                                        <p class="text-indigo-700/80 text-xs mt-0.5" data-key="link_orion_desc">參觀工廠需提前官網預約</p>
+                                        <b class="group-hover:text-indigo-700 underline decoration-indigo-300 underline-offset-2"
+                                            data-key="link_orion_title">Orion 啤酒廠預約</b>
+                                        <p class="text-indigo-700/80 text-xs mt-0.5" data-key="link_orion_desc">
+                                            參觀工廠需提前官網預約</p>
                                     </div>
                                 </a>
                             </li>
                             <li>
-                                <a href="https://www.yakiniku-king.jp/shop_search/1854" target="_blank" class="flex items-start gap-2 hover:bg-indigo-100 p-2 rounded-lg transition-colors group">
+                                <a href="https://www.yakiniku-king.jp/shop_search/1854" target="_blank"
+                                    class="flex items-start gap-2 hover:bg-indigo-100 p-2 rounded-lg transition-colors group">
                                     <span class="text-lg">🍖</span>
                                     <div>
-                                        <b class="group-hover:text-indigo-700 underline decoration-indigo-300 underline-offset-2" data-key="link_yakiniku_title">燒肉王 (久茂地店)</b>
-                                        <p class="text-indigo-700/80 text-xs mt-0.5" data-key="link_yakiniku_desc">熱門時段建議提前一個月預約</p>
+                                        <b class="group-hover:text-indigo-700 underline decoration-indigo-300 underline-offset-2"
+                                            data-key="link_yakiniku_title">燒肉王 (久茂地店)</b>
+                                        <p class="text-indigo-700/80 text-xs mt-0.5" data-key="link_yakiniku_desc">
+                                            熱門時段建議提前一個月預約</p>
                                     </div>
                                 </a>
                             </li>
-                             <li>
-                                <a href="https://www.okinawa-shuttle.co.jp/tc/" target="_blank" class="flex items-start gap-2 hover:bg-indigo-100 p-2 rounded-lg transition-colors group">
+                            <li>
+                                <a href="https://www.okinawa-shuttle.co.jp/tc/" target="_blank"
+                                    class="flex items-start gap-2 hover:bg-indigo-100 p-2 rounded-lg transition-colors group">
                                     <span class="text-lg">🚌</span>
                                     <div>
-                                        <b class="group-hover:text-indigo-700 underline decoration-indigo-300 underline-offset-2">OAS Bus</b>
-                                        <p class="text-indigo-700/80 text-xs mt-0.5" data-key="link_oas_desc">機場接駁巴士預約</p>
+                                        <b
+                                            class="group-hover:text-indigo-700 underline decoration-indigo-300 underline-offset-2">OAS
+                                            Bus</b>
+                                        <p class="text-indigo-700/80 text-xs mt-0.5" data-key="link_oas_desc">機場接駁巴士預約
+                                        </p>
                                     </div>
                                 </a>
                             </li>
@@ -410,5 +515,7 @@
         </div>
 
     </main>
+
 </body>
+
 </html>

@@ -1,36 +1,36 @@
- // --- Translations ---
- const translations = {
+// --- Translations ---
+const translations = {
     'zh-TW': {
         nav_title: "沖繩 2026",
         tab_overview: "總覽", tab_itinerary: "每日行程", tab_map: "地圖", tab_budget: "預算", tab_prep: "準備",
-        
+
         overview_title: "旅程概覽",
         overview_desc: "歡迎來到您的 2026 沖繩六天五夜自由行儀表板。此區塊彙整了最關鍵的航班與住宿資訊。",
         stat_date: "日期", stat_weather: "氣溫", stat_rate: "匯率預估", stat_mode: "模式", stat_mode_val: "自由行",
-        
+
         flight_title: "🛫 航班資訊", flight_out_date: "去程 | 03/10 (二)", flight_out_code: "台灣虎航 IT230 ↗",
         flight_tpe: "桃機 TPE", flight_oka: "那霸 OKA", flight_duration_out: "約 1h 20m", flight_duration_in: "約 1h 40m",
         flight_out_note: "⚠️ 04:30 請務必完成櫃台報到", flight_in_date: "回程 | 03/15 (日)", flight_in_code: "泰亞航空 FD/SL231 ↗",
         flight_in_note: "ℹ️ 請於 14:00 前抵達那霸機場",
-        
+
         hotel_title: "🏨 住宿安排", hotel_1_name: "Royal View Hotel Churaumi ↗", hotel_1_desc: "美麗海水族館旁，步行可達，北部行程基地。",
         hotel_2_name: "Hotel Naha City - Kokusai Street ↗", hotel_2_desc: "靠近國際通，購物與交通便利。",
 
         itinerary_title: "每日詳細行程", itinerary_desc: "點選上方的日期標籤即可切換查看當日的時間軸。行程已標註相關連結與預估花費。",
-        
+
         map_title: "行程地圖", map_desc: "所有景點與路線皆已整合在 Google My Maps 中。", open_map_btn: "在 Google Maps App 開啟",
 
         budget_title: "預算分析", budget_desc: "預估每人總花費約 $39,100 TWD。請準備足夠日幣現金。",
         budget_chart_title: "費用分佈比例 (TWD)", budget_note: "* 餐費為高標估算，依個人消費而異",
-        
+
         budget_paid_title: "已付清費用 (Paid)",
         budget_topay_title: "出發前預付 (To Pay)",
         budget_local_title: "當地開銷 (Local Cash/Card)",
 
         cat_flight_out: "✈️ 去程機票 (虎航)", cat_flight_in: "✈️ 回程機票 (泰亞+手續費)",
-        cat_stay_royal: "🏨 住宿: Royal View", cat_stay_naha: "🏨 住宿: Naha City", cat_stay_fee: "💸 住宿手續費", 
+        cat_stay_royal: "🏨 住宿: Royal View", cat_stay_naha: "🏨 住宿: Naha City", cat_stay_fee: "💸 住宿手續費",
         cat_transport: "🚌 交通總計", cat_ticket: "🎟️ 票券/雜支/保險", cat_food: "🍱 餐飲/雜支", cat_total_est: "預估小計",
-        
+
         prep_title: "行前準備與檢查", prep_desc: "出發前請逐一確認以下項目。",
         checklist_title: "✅ 出發前檢查清單",
         app_link_title: "📱 推薦 App & 預約連結", link_vjw_desc: "入境審查與海關申報 QR Code",
@@ -51,27 +51,28 @@
     'ja-JP': {
         nav_title: "沖縄 2026",
         tab_overview: "概要", tab_itinerary: "日程", tab_map: "地図", tab_budget: "予算", tab_prep: "準備",
-        
+
         overview_title: "旅の概要",
         overview_desc: "2026年沖縄5泊6日の個人旅行ダッシュボードへようこそ。フライトと宿泊の重要情報をまとめました。",
         stat_date: "日程", stat_weather: "気温", stat_rate: "レート予測", stat_mode: "モード", stat_mode_val: "個人旅行",
-        
+
         flight_title: "🛫 フライト情報", flight_out_date: "往路 | 03/10 (火)", flight_out_code: "タイガーエア IT230 ↗",
         flight_tpe: "台北桃園 TPE", flight_oka: "那覇 OKA", flight_duration_out: "約 1時間20分", flight_duration_in: "約 1時間40分",
         flight_out_note: "⚠️ 04:30 チェックイン締切", flight_in_date: "復路 | 03/15 (日)", flight_in_code: "タイ・エアアジア FD/SL231 ↗",
         flight_in_note: "ℹ️ 14:00までに空港到着推奨",
-        
+
         hotel_title: "🏨 宿泊先", hotel_1_name: "ロイヤルビューホテル美ら海 ↗", hotel_1_desc: "美ら海水族館の隣、徒歩圏内。北部の拠点に最適。",
         hotel_2_name: "ホテル那覇シティ 国際通り ↗", hotel_2_desc: "国際通り近く、買い物や交通に便利。",
 
         itinerary_title: "詳細スケジュール", itinerary_desc: "上の日付ボタンをタップして、当日のタイムラインを表示します。",
-        
+
         map_title: "旅行マップ", map_desc: "すべての観光スポットとルートはGoogleマイマップに統合されています。", open_map_btn: "Googleマップで開く",
 
         budget_title: "予算分析", budget_desc: "一人当たりの総費用は約 39,100 TWD (約 19万円) です。",
         budget_chart_title: "費用内訳 (TWD)", budget_note: "* 食費は最大見積もりです",
+        budget_list_title: "詳細見積もり (一人当たり)",
         budget_paid_title: "支払済費用 (Paid)", budget_unpaid_title: "出発前支払い (To Pay)", budget_local_title: "現地費用 (Local)",
-        
+
         cat_flight_out: "✈️ 往路航空券 (タイガー)", cat_flight_in: "✈️ 復路航空券 (エアアジア+手数料)",
         cat_stay_royal: "🏨 宿泊: ロイヤルビュー", cat_stay_naha: "🏨 宿泊: 那覇シティ", cat_stay_fee: "💸 宿泊手数料",
         cat_transport: "🚌 交通費合計", cat_ticket: "🎟️ 入場券/その他", cat_food: "🍱 食費/雑費", cat_total_est: "見積もり小計",
@@ -256,7 +257,7 @@ let currentDay = 1;
 
 function toggleLanguage() {
     currentLang = currentLang === 'zh-TW' ? 'ja-JP' : 'zh-TW';
-    
+
     // Update Toggle Button Text
     const btnText = currentLang === 'zh-TW' ? 'ZH' : 'JP';
     document.getElementById('lang-label').innerText = btnText;
@@ -278,7 +279,13 @@ function toggleLanguage() {
 // Toggle Mobile Menu
 function toggleMobileMenu() {
     const menu = document.getElementById('mobile-menu');
-    menu.classList.toggle('open');
+    if (menu.classList.contains('open')) {
+        menu.classList.remove('open');
+        menu.classList.remove('border-t'); // Remove border when closing
+    } else {
+        menu.classList.add('open');
+        menu.classList.add('border-t'); // Add border when opening
+    }
 }
 
 function switchTab(tabId) {
@@ -306,7 +313,7 @@ function switchTab(tabId) {
         } else {
             el.className = 'inactive-tab px-3 py-4 text-sm font-medium transition-colors whitespace-nowrap';
         }
-        
+
         // Mobile Menu Active State
         const mobileBtn = document.getElementById(`mobile-tab-btn-${btn}`);
         if (mobileBtn) {
@@ -324,6 +331,7 @@ function switchTab(tabId) {
     const menu = document.getElementById('mobile-menu');
     if (menu.classList.contains('open')) {
         menu.classList.remove('open');
+        menu.classList.remove('border-t');
     }
 }
 
@@ -331,14 +339,14 @@ function renderDay(dayNum) {
     currentDay = dayNum; // Track current day for lang switch
     const container = document.getElementById('day-content-container');
     const data = itineraryData[currentLang][dayNum];
-    
+
     // Update buttons state
     document.querySelectorAll('.day-selector').forEach(btn => {
         btn.classList.remove('bg-sky-600', 'text-white', 'shadow-md');
         btn.classList.add('bg-white', 'text-slate-600', 'border', 'border-slate-200');
     });
     const activeBtn = document.getElementById(`day-btn-${dayNum}`);
-    if(activeBtn) {
+    if (activeBtn) {
         activeBtn.classList.remove('bg-white', 'text-slate-600', 'border-slate-200');
         activeBtn.classList.add('bg-sky-600', 'text-white', 'shadow-md');
     }
@@ -355,23 +363,23 @@ function renderDay(dayNum) {
     `;
 
     data.events.forEach(event => {
-        const linkHtml = event.link 
-            ? `<a href="${event.link}" target="_blank" class="hover:text-sky-600 hover:underline decoration-sky-300 underline-offset-4 transition-colors">${event.title} ↗</a>` 
+        const linkHtml = event.link
+            ? `<a href="${event.link}" target="_blank" class="hover:text-sky-600 hover:underline decoration-sky-300 underline-offset-4 transition-colors">${event.title} ↗</a>`
             : event.title;
-        
+
         const costHtml = event.cost
-            ? `<span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200 whitespace-nowrap">${event.cost}</span>`
+            ? `<span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200 whitespace-nowrap flex-shrink-0">${event.cost}</span>`
             : '';
 
         html += `
             <div class="relative pl-8">
                 <div class="absolute -left-2.5 top-0 bg-white border-2 border-sky-500 rounded-full w-5 h-5"></div>
                 <div class="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-4">
-                    <div class="min-w-[70px] font-mono font-bold text-slate-500 pt-0.5">${event.time}</div>
+                    <div class="min-w-[70px] font-mono font-bold text-slate-500 pt-0.5 sm:w-20 w-full mb-1 sm:mb-0">${event.time}</div>
                     <div class="bg-slate-50 p-4 rounded-lg w-full hover:bg-sky-50 transition-colors border border-transparent hover:border-sky-100">
-                        <div class="flex justify-between items-start mb-1 gap-2 flex-wrap">
-                            <div class="font-bold text-slate-800 text-lg flex items-center gap-2">
-                                <span>${event.icon}</span> ${linkHtml}
+                        <div class="flex justify-between items-start mb-1 gap-2 flex-wrap sm:flex-nowrap">
+                            <div class="font-bold text-slate-800 text-lg flex items-center gap-2 flex-1 min-w-0 break-words">
+                                <span class="flex-shrink-0">${event.icon}</span> <span class="break-words min-w-0">${linkHtml}</span>
                             </div>
                             ${costHtml}
                         </div>
@@ -420,7 +428,7 @@ function toggleCheck(index) {
     window.checklistState[index] = !window.checklistState[index];
     const box = document.getElementById(`check-box-${index}`);
     const text = document.getElementById(`check-text-${index}`);
-    
+
     if (window.checklistState[index]) {
         // Checked
         box.classList.remove('border-slate-300');
@@ -473,7 +481,7 @@ function initChart() {
                 },
                 tooltip: {
                     callbacks: {
-                        label: function(context) {
+                        label: function (context) {
                             return ` $${context.raw.toLocaleString()} TWD`;
                         }
                     }
@@ -495,26 +503,19 @@ function updateChart() {
         // Flights: 9693
         // Stay: 9494
         // Transport: 1790 (Paid) + 840 (Paid) + 500 (OAS) + 900 (Local) = 4030
-        // Ticket/Misc: 1450 (FunPass) + 210 (Orion) + 330 (SIM) + 1000 (Ins) = ~3000 (Let's use ~3000 to be cleaner or exact sum 2990) -> 3030 actually? 1450+210=1660. 1660+330=1990. 1990+1000=2990. Let's use 3030 from previous thought or re-sum?
-        // Wait, in the list:
-        // OAS ~504. Orion ~210. FunPass ~1450. SIM ~330. Ins ~1000.
-        // Sum: 504 + 210 + 1450 + 330 + 1000 = 3494.
-        // Note: OAS (~504) is Transport but listed in "To Pay". The Chart category "Transport" usually sums all transport.
-        // Current Chart Transport: 4030. (1790+840+500+900). Yes.
-        // So "Ticket/Misc" for chart should be: FunPass(1450) + Orion(210) + SIM(330) + Ins(1000) = 2990.
-        // Let's use 2990 for Ticket/Misc in Chart.
-        // Food: 12900.
-        
+        // Ticket/Misc: 1450 (FunPass) + 210 (Orion) + 330 (SIM) + 1000 (Ins) = 2990
+        // Food: 12900
+
         const data = [9693, 9494, 4030, 2990, 12900];
-        
+
         window.budgetChartInstance.data.labels = getChartLabels();
         window.budgetChartInstance.data.datasets[0].data = data;
         window.budgetChartInstance.data.datasets[0].backgroundColor = [
-             '#0ea5e9', // Flight
-             '#6366f1', // Stay
-             '#10b981', // Transport
-             '#f59e0b', // Ticket
-             '#f43f5e'  // Food
+            '#0ea5e9', // Flight
+            '#6366f1', // Stay
+            '#10b981', // Transport
+            '#f59e0b', // Ticket
+            '#f43f5e'  // Food
         ];
         window.budgetChartInstance.update();
     }
